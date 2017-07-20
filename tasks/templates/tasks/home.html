@@ -5,4 +5,6 @@
     <h1>Hello World!</h1>
     <img src="{% static 'img/django.png' %}" alt="Django logo hexagonal">
     <p>Date: {{ date|date }}</p>
+    <p><a href="{% url 'category-list' %}">Liste des categories</a></p>
+    <p><a href="{% url 'todo' %}">TODO</a></p>
 {% endblock content %}
