@@ -1,11 +1,23 @@
 from datetime import datetime
 
 from django.core.urlresolvers import resolve
+from django.forms.models import model_to_dict
 from django.http import HttpRequest
 from django.test import TestCase
 from django.urls import reverse
 
-from ..views import CategoryListView, home_page, TodoView
+from ..models import Category, ToDoEntry
+from ..views import (
+    ToDoEntryCreateView,
+    ToDoEntryDeleteView,
+    ToDoEntryUpdateView,
+    CategoryCreateView,
+    CategoryDeleteView,
+    CategoryListView,
+    CategoryUpdateView,
+    home_page,
+    TodoView,
+)
 from .factories import CategoryFactory, ToDoEntryFactory
 
 
@@ -18,7 +30,10 @@ class HomePageTest(TestCase):
         request = HttpRequest()
         response = home_page(request)
         content = response.content
-        assert content.startswith(b'<html>'), 'Le contenu ne commence pas par <html>'
+        assert content.startswith(
+            b'<!DOCTYPE html>\n<html lang=\'fr\'>'
+        ), 'Mauvais contenu : ' + str(content)[:100]
+
         assert b'<title>ToDoz</title>' in content, 'Le contenu ne contient pas Todoz en title'
         assert content.endswith(b'</html>'), 'Le contenu ne se termine pas par </html>'
 
@@ -77,6 +92,177 @@ class CategoryListTest(TestCase):
         content = response.content.decode('utf-8')
         assert category.name in content
         assert category2.name in content
+
+
+class CategoryCreateTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse('category-create')
+
+    def test_url_resolve_to_category_create_view(self):
+        view = resolve(self.url)
+        assert view.func.view_class == CategoryCreateView
+
+    def test_status_code_is_200(self):
+        response = self.client.get(self.url)
+        assert response.status_code == 200, response.status_code
+
+    def test_template(self):
+        response = self.client.get(self.url)
+        templates = [t.name for t in response.templates]
+        assert 'tasks/category_form.html' in templates
+
+    def test_post_empty(self):
+        response = self.client.post(self.url)
+        assert response.status_code == 200, response.status_code
+        assert 'name' in response.context['form'].errors
+
+    def test_post(self):
+        response = self.client.post(self.url, {'name': 'foo'})
+        assert response.status_code == 302, response.status_code
+        assert Category.objects.all().count() == 1
+
+
+class CategoryUpdateTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.category = CategoryFactory()
+        cls.url = reverse('category-update', kwargs={'pk': cls.category.pk})
+
+    def test_url_resolve_to_category_create_view(self):
+        view = resolve(self.url)
+        assert view.func.view_class == CategoryUpdateView
+
+    def test_status_code_is_200(self):
+        response = self.client.get(self.url)
+        assert response.status_code == 200, response.status_code
+
+    def test_template(self):
+        response = self.client.get(self.url)
+        templates = [t.name for t in response.templates]
+        assert 'tasks/category_form.html' in templates
+
+    def test_post_empty(self):
+        response = self.client.post(self.url)
+        assert response.status_code == 200, response.status_code
+        assert 'name' in response.context['form'].errors
+
+    def test_post(self):
+        response = self.client.post(self.url, {'name': 'foo2'})
+        assert response.status_code == 302, response.status_code
+        assert Category.objects.get(pk=self.category.pk).name == 'foo2'
+
+
+class CategoryDeleteTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.category = CategoryFactory()
+        cls.url = reverse('category-delete', kwargs={'pk': cls.category.pk})
+
+    def test_url_resolve_to_category_create_view(self):
+        view = resolve(self.url)
+        assert view.func.view_class == CategoryDeleteView
+
+    def test_status_code_is_200(self):
+        response = self.client.get(self.url)
+        assert response.status_code == 200, response.status_code
+
+    def test_template(self):
+        response = self.client.get(self.url)
+        templates = [t.name for t in response.templates]
+        assert 'tasks/category_confirm_delete.html' in templates
+
+    def test_post(self):
+        self.client.post(self.url)
+        assert Category.objects.all().count() == 0
+
+
+class ToDoEntryCreateTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse('todo-create')
+
+    def test_url_resolve_to_todo_create_view(self):
+        view = resolve(self.url)
+        assert view.func.view_class == ToDoEntryCreateView
+
+    def test_status_code_is_200(self):
+        response = self.client.get(self.url)
+        assert response.status_code == 200, response.status_code
+
+    def test_template(self):
+        response = self.client.get(self.url)
+        templates = [t.name for t in response.templates]
+        assert 'tasks/todoentry_form.html' in templates
+
+    def test_post_empty(self):
+        response = self.client.post(self.url)
+        assert response.status_code == 200, response.status_code
+        assert 'name' in response.context['form'].errors
+
+    def test_post(self):
+        todo = ToDoEntryFactory()
+        todo.pk = None
+        data = model_to_dict(todo)
+        response = self.client.post(self.url, data)
+        assert response.status_code == 302, response.status_code
+        assert ToDoEntry.objects.all().count() == 2
+
+
+class ToDoEntryUpdateTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.todo = ToDoEntryFactory()
+        cls.url = reverse('todo-update', kwargs={'pk': cls.todo.pk})
+
+    def test_url_resolve_to_category_create_view(self):
+        view = resolve(self.url)
+        assert view.func.view_class == ToDoEntryUpdateView
+
+    def test_status_code_is_200(self):
+        response = self.client.get(self.url)
+        assert response.status_code == 200, response.status_code
+
+    def test_template(self):
+        response = self.client.get(self.url)
+        templates = [t.name for t in response.templates]
+        assert 'tasks/todoentry_form.html' in templates
+
+    def test_post_empty(self):
+        response = self.client.post(self.url)
+        assert response.status_code == 200, response.status_code
+        assert 'name' in response.context['form'].errors
+
+    def test_post(self):
+        data = model_to_dict(self.todo)
+        data['name'] = 'foo2'
+        response = self.client.post(self.url, data)
+        assert response.status_code == 302, response.status_code
+        assert ToDoEntry.objects.get(pk=self.todo.pk).name == 'foo2'
+
+
+class ToDoEntryDeleteTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.todo = ToDoEntryFactory()
+        cls.url = reverse('todo-delete', kwargs={'pk': cls.todo.pk})
+
+    def test_url_resolve_to_todo_create_view(self):
+        view = resolve(self.url)
+        assert view.func.view_class == ToDoEntryDeleteView
+
+    def test_status_code_is_200(self):
+        response = self.client.get(self.url)
+        assert response.status_code == 200, response.status_code
+
+    def test_template(self):
+        response = self.client.get(self.url)
+        templates = [t.name for t in response.templates]
+        assert 'tasks/todoentry_confirm_delete.html' in templates
+
+    def test_post(self):
+        self.client.post(self.url)
+        assert ToDoEntry.objects.all().count() == 0
 
 
 class TodoViewTest(TestCase):

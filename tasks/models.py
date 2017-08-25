@@ -13,8 +13,8 @@ class ToDoEntry(models.Model):
     description = models.TextField(blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     done = models.BooleanField(default=False)
-    creation_date = models.DateField(auto_now_add=True)
-    last_modified = models.DateField(auto_now=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = 'Elément de la todo'

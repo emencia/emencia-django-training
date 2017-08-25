@@ -1,15 +1,21 @@
 {% extends "tasks/base.html" %}
 
 {% block content %}
+    <h1>Mes TODOs</h1>
+    <a class="btn btn-dark" href="{% url 'todo-create' %}">Ajouter un élément</a>
+    <hr>
     {% for category in categories %}
         <h1>{{ category.name|title }}</h1>
+        <hr>
         <ul>
         {% for item in category.todoentry_set.all %}
-            <li>{{ item.name }}: {{ item.description }} | créé il y a {{ item.creation_date|timesince}}</li>
+            <li>{{ item.name }}: {{ item.description }} | créé il y a {{ item.creation_date|timesince}} <span class="float-right"><a class='btn btn-sm btn-light' href="{% url 'todo-update' pk=item.pk %}">Editer</a> <a class='btn btn-sm  btn-danger' href="{% url 'todo-delete' pk=item.pk %}">Supprimer</a></span></li>
+            <span class="clearfix"></span>
         {% empty %}
             <p>Cette catégorie n'a pas d'élément.</p>
         {% endfor %}
         </ul>
+        <hr>
     {% empty %}
         <p>Il n'y a pas encore de catégorie.</p>
     {% endfor %}

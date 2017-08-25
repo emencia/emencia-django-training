@@ -1,11 +1,17 @@
 {% extends "tasks/base.html" %}
 
 {% block content %}
+    <h1>Catégories</h1>
+    <p>
+        <a class="btn btn-dark" href="{% url 'category-create' %}">Ajouter une catégorie</a>
+    </p>
+    <hr>
     <ul>
     {% for category in object_list %}
-        <li>{{ category.name }}</li>
+        <li>{{ category.name }} <a class="btn btn-light" href="{% url 'category-update' pk=category.pk %}">Editer</a> <a class="btn btn-danger" href="{% url 'category-delete' pk=category.pk %}">Supprimer</a></li>
     {% empty %}
         <li>Vous n'avez pas encore créé de catégorie.</li>
     {% endfor %}
     </ul>
+    <hr>
 {% endblock content %}

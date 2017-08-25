@@ -1,0 +1,8 @@
+{% extends "tasks/base.html" %}
+
+{% block content %}
+    Êtes-vous sûr de vouloir supprimer {{ object }} ? Cette opération est définitive.
+    <form method="post">{% csrf_token %}
+        <input type="submit" value='Supprimer'>
+    </form>
+{% endblock content %}

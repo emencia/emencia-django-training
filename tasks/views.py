@@ -1,9 +1,17 @@
 from datetime import datetime
 
 from django.shortcuts import render
-from django.views.generic import ListView, TemplateView
+from django.urls import reverse_lazy
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
 
-from .models import Category
+from .forms import ToDoEntryForm
+from .models import Category, ToDoEntry
 
 
 def home_page(request):
@@ -13,6 +21,40 @@ def home_page(request):
 
 class CategoryListView(ListView):
     model = Category
+
+
+class CategoryCreateView(CreateView):
+    model = Category
+    fields = ('name', )
+    success_url = reverse_lazy('category-list')
+
+
+class CategoryUpdateView(UpdateView):
+    model = Category
+    fields = ('name', )
+    success_url = reverse_lazy('category-list')
+
+
+class CategoryDeleteView(DeleteView):
+    model = Category
+    success_url = reverse_lazy('category-list')
+
+
+class ToDoEntryCreateView(CreateView):
+    model = ToDoEntry
+    form_class = ToDoEntryForm
+    success_url = reverse_lazy('todo')
+
+
+class ToDoEntryUpdateView(UpdateView):
+    model = ToDoEntry
+    form_class = ToDoEntryForm
+    success_url = reverse_lazy('todo')
+
+
+class ToDoEntryDeleteView(DeleteView):
+    model = ToDoEntry
+    success_url = reverse_lazy('todo')
 
 
 class TodoView(TemplateView):
