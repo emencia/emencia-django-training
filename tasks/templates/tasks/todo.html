@@ -1,4 +1,5 @@
 {% extends "tasks/base.html" %}
+{% load static %}
 
 {% block content %}
     <h1>Mes TODOs</h1>
@@ -9,7 +10,15 @@
         <hr>
         <ul>
         {% for item in category.todoentry_set.all %}
-            <li>{{ item.name }}: {{ item.description }} | créé il y a {{ item.creation_date|timesince}} <span class="float-right"><a class='btn btn-sm btn-light' href="{% url 'todo-update' pk=item.pk %}">Editer</a> <a class='btn btn-sm  btn-danger' href="{% url 'todo-delete' pk=item.pk %}">Supprimer</a></span></li>
+            <li class="space-after">
+                <span id="task_text_{{ item.pk }}" {% if item.done %}class="strike"{% endif %}>{{ item.name }}: {{ item.description }}</span>
+                | créé il y a {{ item.creation_date|timesince}}
+                {% if not item.done %}<button data-pk='{{ item.pk }}' class="btn btn-info done_button">Terminé !</button>{% endif %}
+                <span class="float-right">
+                    {% if not item.done %}<a class='btn btn-sm btn-light edit-{{ item.pk }}' href="{% url 'todo-update' pk=item.pk %}">Editer</a>{% endif %}
+                    <a class='btn btn-sm  btn-danger' href="{% url 'todo-delete' pk=item.pk %}">Supprimer</a>
+                </span>
+            </li>
             <span class="clearfix"></span>
         {% empty %}
             <p>Cette catégorie n'a pas d'élément.</p>
@@ -20,3 +29,8 @@
         <p>Il n'y a pas encore de catégorie.</p>
     {% endfor %}
 {% endblock content %}
+
+{% block extra_js %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src='{% static "js/mark_as_done.js" %}'></script>
+{% endblock extra_js %}

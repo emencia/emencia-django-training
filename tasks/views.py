@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -8,6 +9,7 @@ from django.views.generic import (
     ListView,
     TemplateView,
     UpdateView,
+    View,
 )
 
 from .models import Category, ToDoEntry
@@ -67,3 +69,27 @@ class TodoView(TemplateView):
             .prefetch_related('todoentry_set')
         )
         return context
+
+
+class ToDoMarkAsDoneView(View):
+    http_method_names = ['post', ]
+
+    def post(self, request, *args, **kwargs):
+        status = 200
+        messages = {
+            200: 'Ok',
+            404: 'Object does not exist',
+            401: 'Entry is already mark as done',
+        }
+
+        try:
+            todo = ToDoEntry.objects.get(pk=kwargs['pk'])
+            assert not todo.done
+            todo.done = True
+            todo.save()
+        except ToDoEntry.DoesNotExist:
+            status = 404
+        except AssertionError:
+            status = 401
+
+        return JsonResponse({'msg': messages[status]}, status=status)

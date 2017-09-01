@@ -31,4 +31,7 @@ urlpatterns = [
     url(r'^todo/$',
         views.TodoView.as_view(),
         name='todo'),
+    url(r'^todo/mark_as_done/(?P<pk>\d+)/$',
+        views.ToDoMarkAsDoneView.as_view(),
+        name='todo_mark_as_done'),
 ]

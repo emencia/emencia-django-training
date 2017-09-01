@@ -8,14 +8,15 @@ from django.urls import reverse
 
 from ..models import Category, ToDoEntry
 from ..views import (
-    ToDoEntryCreateView,
-    ToDoEntryDeleteView,
-    ToDoEntryUpdateView,
     CategoryCreateView,
     CategoryDeleteView,
     CategoryListView,
     CategoryUpdateView,
     home_page,
+    ToDoEntryCreateView,
+    ToDoEntryDeleteView,
+    ToDoEntryUpdateView,
+    ToDoMarkAsDoneView,
     TodoView,
 )
 from .factories import CategoryFactory, ToDoEntryFactory
@@ -303,3 +304,43 @@ class TodoViewTest(TestCase):
         content = response.content.decode('utf-8')
         assert category.name in content
         assert entry.name in content
+
+
+class TodoMarkAsDoneViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.todo = ToDoEntryFactory()
+        cls.url = reverse('todo_mark_as_done', kwargs={'pk': cls.todo.pk})
+
+    def test_root_url_resolve_to_home_page_view(self):
+        view = resolve(self.url)
+        assert view.func.view_class == ToDoMarkAsDoneView
+
+    def test_status_code_for_get_is_405(self):
+        response = self.client.get(self.url)
+        assert response.status_code == 405, response.status_code
+
+    def test_status_code_for_post_is_200(self):
+        response = self.client.post(self.url)
+        assert response.status_code == 200, response.status_code
+
+    def test_content_type_for_post_is_json(self):
+        response = self.client.post(self.url)
+        assert response['Content-Type'] == 'application/json'
+
+    def test_done_attribute_is_updated_with_post(self):
+        assert not self.todo.done
+        self.client.post(self.url)
+        todo = ToDoEntry.objects.get(pk=self.todo.pk)
+        assert todo.done
+
+    def test_post_with_done_entry(self):
+        todo_done = ToDoEntryFactory(done=True)
+        url = reverse('todo_mark_as_done', kwargs={'pk': todo_done.pk})
+        response = self.client.post(url)
+        assert response.status_code == 401
+
+    def test_status_code_with_wrong_pk(self):
+        url = reverse('todo_mark_as_done', kwargs={'pk': '999999999999999999'})
+        response = self.client.post(url)
+        assert response.status_code == 404
