@@ -1,3 +1,5 @@
+import pytz
+
 from datetime import datetime
 
 from django.test import TestCase
@@ -23,8 +25,8 @@ class TestToDoEntry(TestCase):
             'Wrong implementation of __str__'
 
     def test_ordering(self):
-        bug_year = datetime(2000, 1, 1)
-        few_years_ago = datetime(2010, 1, 1)
+        bug_year = pytz.utc.localize(datetime(2000, 1, 1))
+        few_years_ago = pytz.utc.localize(datetime(2010, 1, 1))
         todo_entry2 = ToDoEntryFactory()
         todo_entry2.creation_date = bug_year
         todo_entry2.save()
