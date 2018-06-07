@@ -1,0 +1,159 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Présentation &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            <div class="section" id="sommaire">
+              <a href="/emencia-django-training/src/home.html" class="button">SOMMAIRE</a>
+            </div>
+
+  <div class="section" id="presentation">
+<span id="presentation"></span><h1>Présentation<a class="headerlink" href="#presentation" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Cette présentation est succincte, pour une documentation plus complète, se référer à notre formation Python.</p>
+<p>Python est un langage haut-niveau utilisé dans de nombreux domaines, créé par Guido van Rossum et distribué pour la première fois en 1991. Python a une philosophie qui accentue la lisibilité du code (avec notamment de l’indentation pour délimiter les blocs de code plutôt que des accolades ou des mots-clés) et une syntaxe qui permet aux développeurs d’exprimer des concepts en moins de lignes qu’avec d’autre langages comme C++ ou Java.</p>
+<p>Exemple:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">add</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>   <span class="c1"># 9</span>
+<span class="n">add</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>  <span class="c1"># &quot;foobar&quot;</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">)</span>  <span class="c1"># hello world</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;hello&quot;</span>
+<span class="n">title</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>  <span class="c1"># Hello</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="programmation-objet">
+<span id="programmation-objet"></span><h1>Programmation objet<a class="headerlink" href="#programmation-objet" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Python n’est pas limité aux scripts malgré sa ressemblance à première vue à du pseudo-code. Ce langage permet au contraire une programmation objet poussée.</p>
+<p>Exemple:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">class</span> <span class="nc">Animal</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generic class for Animals</span>
+<span class="sd">    Each animal has a name and can move</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Defines a &quot;name&quot; attribute on instantiation</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Defines how the object is represented</span>
+<span class="sd">        when calling the str method or </span>
+<span class="sd">        implicitly with the print builtin</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;{} moves&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
+
+
+<span class="k">class</span> <span class="nc">Dog</span><span class="p">(</span><span class="n">Animal</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">bark</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Woof!&quot;</span><span class="p">)</span>
+
+
+<span class="n">random_animal</span> <span class="o">=</span> <span class="n">Animal</span><span class="p">(</span><span class="s2">&quot;Foo&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">random_animal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># Foo (attribute)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">random_animal</span><span class="p">)</span>  <span class="c1"># Foo (str method)</span>
+
+<span class="n">rex</span> <span class="o">=</span> <span class="n">Dog</span><span class="p">(</span><span class="s2">&quot;Rex&quot;</span><span class="p">)</span>
+<span class="n">rex</span><span class="o">.</span><span class="n">move</span><span class="p">()</span>  <span class="c1"># &quot;Rex moves&quot;</span>
+<span class="n">rex</span><span class="o">.</span><span class="n">bark</span><span class="p">()</span>  <span class="c1"># &quot;Woof!&quot;</span>
+</pre></div>
+</div>
+<p>Ce n’est bien sûr qu’un minuscule sous ensemble des possibilités que Python offre mais cela permet de voir la création de classe et l’héritage simple.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Présentation</a></li>
+<li><a class="reference internal" href="#programmation-objet">Programmation objet</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Introduction-à-Python.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+
+      |
+      <a href="../_sources/src/Introduction-à-Python.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+
+
+
+  </body>
+</html>

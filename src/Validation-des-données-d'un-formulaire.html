@@ -1,0 +1,105 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Validation &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="validation">
+<span id="validation"></span><h1>Validation<a class="headerlink" href="#validation" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Il existe une méthode <code class="docutils literal notranslate"><span class="pre">is_valid</span></code> sur les formulaires qui permet de vérifier la conformité des données.</p>
+<p>Une grande partie des validations peut s’effectuer à l’aide de <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/forms/validation/#validators">validators</a>. Il est tout à fait possible de créer des <code class="docutils literal notranslate"><span class="pre">Field</span></code> personnalisés avec des méthodes de validation particulières.</p>
+<p>La validation se passe en plusieurs étapes :</p>
+<ul class="simple">
+<li>la méthode <code class="docutils literal notranslate"><span class="pre">to_python()</span></code> d’un Field est la première étape de la validation. Cela contraint la valeur au type attendu (<code class="docutils literal notranslate"><span class="pre">string</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code> etc..). En cas d’erreur, l’exception <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code> sera levée.</li>
+<li>la méthode <code class="docutils literal notranslate"><span class="pre">validate()</span></code> du Field est appellée, cela correspond aux vérifications qui ne conviennent pas aux validateurs. Ici aussi, l’exception <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code> est levée en ca d’erreur.</li>
+</ul>
+<p>NB: la méthode <code class="docutils literal notranslate"><span class="pre">run_validators()</span></code> d’un field éxécute tous les validateurs du field et aggrège les erreurs.</p>
+<p>Pour un <code class="docutils literal notranslate"><span class="pre">Field</span></code>, la méthode <code class="docutils literal notranslate"><span class="pre">clean()</span></code> est responsable d’appeler <code class="docutils literal notranslate"><span class="pre">to_python()</span></code>, <code class="docutils literal notranslate"><span class="pre">validate()</span></code>, et <code class="docutils literal notranslate"><span class="pre">run_validators()</span></code> dans l’ordre et de propager leurs erreurs. Si une des méthodes lèvent une exception, la validation s’arrête pour ce champ. Cette méthode retourne les valeurs «&nbsp;nettoyées&nbsp;» das un dictionnaire <code class="docutils literal notranslate"><span class="pre">cleaned_data</span></code> en tant qu’attribut du formulaire.</p>
+<p>La méthode <code class="docutils literal notranslate"><span class="pre">clean_&lt;fieldname&gt;()</span></code> est appelé pour chaque champ et s’occupe de la préparation/validation de la valeur indépendamment du type de champ. Par exemple, si vous voulez vérifier qu’un champ est unique, c’est le bon endroit pour effectuer cette vérification. Cette méthode doit retourner la valeur de ce champ (modifié ou non).</p>
+<p>Enfin, la méthode <code class="docutils literal notranslate"><span class="pre">clean</span></code> d’un formulaire peut appliquer des validations qui nécessitent l’accès à plusieurs champs. Exemple: un champ «&nbsp;password&nbsp;» et un champ «&nbsp;password_confirmation&nbsp;».</p>
+<p>Une fois la validation effectuée, vous pouvez accéder aux erreurs du formulaire via <code class="docutils literal notranslate"><span class="pre">form.errors</span></code>.
+Selon l’endroit où est levé l’erreur, elle pourra se trouver à la clé du nom du champ, ou via la clé <code class="docutils literal notranslate"><span class="pre">__all__</span></code> que l’on peut accéder via la méthode <code class="docutils literal notranslate"><span class="pre">non_field_errors()</span></code>.</p>
+<p>S’il est nécessaire d’attacher une erreur à un champ, on peut appeller la méthode <code class="docutils literal notranslate"><span class="pre">add_error()</span></code>.</p>
+<p>Enfin, la validation d’un ModelForm est quelque peu différente.</p>
+<p>La validation passe d’abord par la validation du formulaire, puis par la validation du modèle lié au formulaire avec l’appel de <code class="docutils literal notranslate"><span class="pre">MyModel.clean()</span></code>.</p>
+<p>Un <code class="docutils literal notranslate"><span class="pre">ModelForm</span></code> possède également une méthode <code class="docutils literal notranslate"><span class="pre">save()</span></code> qui permet de sauver l’instance en base de données. Dans le cas où la validation n’a pas eu lieu, l’appel à <code class="docutils literal notranslate"><span class="pre">save()</span></code> s’en charge en contrôlant <code class="docutils literal notranslate"><span class="pre">form.errors</span></code>. L’exception <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> est levée si le formulaire est invalide, par exemple si <code class="docutils literal notranslate"><span class="pre">form.errors</span></code> est évalué à <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Validation-des-données-d&#39;un-formulaire.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Validation-des-données-d&#39;un-formulaire.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

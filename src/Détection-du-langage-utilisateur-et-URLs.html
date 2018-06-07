@@ -1,0 +1,192 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Comment Django détermine la langue de l’utilisateur &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="comment-django-determine-la-langue-de-l-utilisateur">
+<span id="comment-django-determine-la-langue-de-l-utilisateur"></span><h1>Comment Django détermine la langue de l’utilisateur<a class="headerlink" href="#comment-django-determine-la-langue-de-l-utilisateur" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Pour utiliser correctement  l’internationalisation et permettre à chaque utilisateur d’utiliser une langue différente, il vous faudra activé le middleware «&nbsp;LocaleMiddleware&nbsp;» (situé ici : <code class="docutils literal notranslate"><span class="pre">django.middleware.locale.LocaleMiddleware</span></code>).</p>
+<p>Par défaut, ou si aucune autre méthode ne permet de définir la langue, le paramètre <code class="docutils literal notranslate"><span class="pre">settings.LANGUAGE_CODE</span></code> sera utilisé pour déterminer la langue. Ce paramètre définit la langue par défaut à utiliser sur toute l’application.</p>
+<p>Avec le middleware <code class="docutils literal notranslate"><span class="pre">LocaleMiddleware</span></code>, la résolution de la langue s’effectue dans l’ordre suivant :</p>
+<ul class="simple">
+<li>Préfixe de langue dans l’url</li>
+<li>Langue indiqué en session</li>
+<li><code class="docutils literal notranslate"><span class="pre">ACCEPT-LANGUAGE</span></code> header</li>
+<li><code class="docutils literal notranslate"><span class="pre">settings.LANGUAGE_CODE</span></code></li>
+</ul>
+<div class="section" id="prefixe-de-langue">
+<span id="prefixe-de-langue"></span><h2>Préfixe de langue<a class="headerlink" href="#prefixe-de-langue" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Django fournit une fonction qui permet d’ajouter un préfixe avec le code de la langue aux URLs :</p>
+<p><code class="docutils literal notranslate"><span class="pre">i18n_patterns(*urls,</span> <span class="pre">prefix_default_language=True)</span></code></p>
+<p>Cette fonction peut être utilisé dans un fichier d’url racine et Django préfixera automatiquement toutes les URLs définies au sein de cette fonction avec la langue courante activée.</p>
+<p><code class="docutils literal notranslate"><span class="pre">prefix_default_language=False</span></code> permet de ne pas ajouter de préfixe dans le cas de la langue par défaut. Cela peut être utile lorsqu’on ajoute des traductions à un site et que l’on veut garder toutes les URLs d’origine pour la langue par défaut.</p>
+<p>Example URL patterns:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls.i18n</span> <span class="kn">import</span> <span class="n">i18n_patterns</span>
+
+<span class="kn">from</span> <span class="nn">.views</span> <span class="kn">import</span> <span class="n">AboutView</span><span class="p">,</span> <span class="n">HomeView</span><span class="p">,</span> <span class="n">LegalView</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^legal/$&#39;</span><span class="p">,</span> <span class="n">LegalView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;legal&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">urlpatterns</span> <span class="o">+=</span> <span class="n">i18n_patterns</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^about/$&#39;</span><span class="p">,</span> <span class="n">AboutView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;about&#39;</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^$&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">HomeView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;home&#39;</span><span class="p">)),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Avec ces URLs, nous pouvons maintenant vérifier avec <code class="docutils literal notranslate"><span class="pre">reverse</span></code> les URLs générées :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">activate</span>
+
+<span class="n">activate</span><span class="p">(</span><span class="s1">&#39;en&#39;</span><span class="p">)</span>
+<span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;about&#39;</span><span class="p">)</span>
+<span class="c1"># &#39;/en/about/&#39;</span>
+<span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;legal&#39;</span><span class="p">)</span>
+<span class="c1"># &#39;/legal/&#39;</span>
+
+<span class="n">activate</span><span class="p">(</span><span class="s1">&#39;fr&#39;</span><span class="p">)</span>
+<span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>
+<span class="c1"># &#39;/fr/&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="langue-en-session">
+<span id="langue-en-session"></span><h2>Langue en session<a class="headerlink" href="#langue-en-session" title="Lien permanent vers ce titre">¶</a></h2>
+<p>La fonction <code class="docutils literal notranslate"><span class="pre">activate</span></code> fixe la langue pour le “thread” courant. Pour assurer la persistance de la langue, il peut être interessant d’utiliser la session ou des cookies pour enregistrer la valeur de la langue.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">translation</span>
+<span class="n">user_language</span> <span class="o">=</span> <span class="s1">&#39;fr&#39;</span>
+<span class="n">translation</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">user_language</span><span class="p">)</span>
+<span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="n">translation</span><span class="o">.</span><span class="n">LANGUAGE_SESSION_KEY</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_language</span>
+</pre></div>
+</div>
+<p>Si vous n’utilisez pas de session, Django utilisera un cookie dont le nom peut être personnalisé via le paramètre de settings <code class="docutils literal notranslate"><span class="pre">LANGUAGE_COOKIE_NAME</span></code>.</p>
+</div>
+<div class="section" id="header">
+<span id="header"></span><h2>Header<a class="headerlink" href="#header" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Une autre manière de détecter la langue est de vérifier la présence et la valeur du header <code class="docutils literal notranslate"><span class="pre">Accept-Language</span></code>. Ce header est envoyé par le browser et indique au serveur le ou les langues à utiliser par ordre de priorité. Django va itérer sur cette liste et sélectionner la première qui correspondra aux langues disponibles.</p>
+</div>
+</div>
+<div class="section" id="la-vue-de-redirection-apres-un-choix-de-langue">
+<span id="la-vue-de-redirection-apres-un-choix-de-langue"></span><h1>La vue de redirection après un choix de langue<a class="headerlink" href="#la-vue-de-redirection-apres-un-choix-de-langue" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Django fournit un vue appellée <code class="docutils literal notranslate"><span class="pre">set_language</span></code> (<code class="docutils literal notranslate"><span class="pre">django.views.i18n.set_language()</span></code>) qui fixe une préférence de langue pour un utilisateur et redirige l’utilisateur vers une URL donnée ou vers la page précédente (comportement par défaut).</p>
+<p>Cette vue peut être activée en ajoutant la ligne suivante à votre fichier d’URL :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^i18n/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;django.conf.urls.i18n&#39;</span><span class="p">)),</span>
+<span class="c1"># La vue set_language sera alors disponible à l&#39;URL /i18n/setlang/</span>
+</pre></div>
+</div>
+<p>Attention de ne pas mettre cette URL au sein du bloc <code class="docutils literal notranslate"><span class="pre">i18n_pattern</span></code>.</p>
+<p>Cette vue s’attend à recevoir une méthode «&nbsp;POST&nbsp;» avec un paramètre de langage dans sa requête. Avec l’utilisation de session, la valeur sera sauvegardée en session (via un cookie sinon).</p>
+<p>Après avoir fixer la valeur de la langue désirée, Django redirige vers l’URL du paramètre «&nbsp;next&nbsp;» (en «&nbsp;post&nbsp;» ou en «&nbsp;get&nbsp;») s’il est présent. Si Django estime que l’URL de redirection est sûre, il redirigera l’utilisateur vers cette URL. Sinon, Django renvoie l’utilisateur sur l’URL indiqué par le header «&nbsp;Referer&nbsp;» s’il est présent et vers «&nbsp;/&nbsp;» sinon.</p>
+<p>Enfin, pour les requêtes AJAX, un status 204 (no content) sera retourné sauf si un paramètre «&nbsp;next&nbsp;» est spécifié.</p>
+<p>Voici un exemple d’implémentation d’une page html fournissant un formulaire de changement de langue :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% load i18n %}
+
+&lt;form action=&quot;{% url &#39;set_language&#39; %}&quot; method=&quot;post&quot;&gt;{% csrf_token %}
+    &lt;select name=&quot;language&quot;&gt;
+        {% get_current_language as LANGUAGE_CODE %}
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+        {% for language in languages %}
+            &lt;option value=&quot;{{ language.code }}&quot;{% if language.code == LANGUAGE_CODE %} selected{% endif %}&gt;
+                {{ language.name_local }} ({{ language.code }})
+            &lt;/option&gt;
+        {% endfor %}
+    &lt;/select&gt;
+    &lt;input type=&quot;submit&quot; value=&quot;Change Language&quot; /&gt;
+&lt;/form&gt;
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Comment Django détermine la langue de l’utilisateur</a><ul>
+<li><a class="reference internal" href="#prefixe-de-langue">Préfixe de langue</a></li>
+<li><a class="reference internal" href="#langue-en-session">Langue en session</a></li>
+<li><a class="reference internal" href="#header">Header</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#la-vue-de-redirection-apres-un-choix-de-langue">La vue de redirection après un choix de langue</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Détection-du-langage-utilisateur-et-URLs.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Détection-du-langage-utilisateur-et-URLs.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

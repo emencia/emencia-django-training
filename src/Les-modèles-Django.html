@@ -1,0 +1,210 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Configurer sa base &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="configurer-sa-base">
+<span id="configurer-sa-base"></span><h1>Configurer sa base<a class="headerlink" href="#configurer-sa-base" title="Lien permanent vers ce titre">¶</a></h1>
+<p>La première étape avant d’interagir avec les modèles est de disposer d’une base de données où les stocker.</p>
+<p>A la création d’un projet Django, le fichier <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> contient la configuration suivante :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s1">&#39;django.db.backends.sqlite3&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;NAME&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">&#39;db.sqlite3&#39;</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>
+</div>
+<p>Cette configuration nous fait utiliser par défaut sqlite3 qui est une base de donnée très légère et rapide. Un fichier <code class="docutils literal notranslate"><span class="pre">db.sqlite3</span></code> sera créé et pourra même être facilement copié, exporté etc…</p>
+<p>Cependant, il est souvent déconseillé en production. Si dans la majorité des cas, le trafic d’utilisateurs ne justifie pas une grosse base de données, dès que votre site décolle, il vaut mieux passer sur une base plus solide et éprouvé comme PostgreSQL par exemple. A noter, une base comme PostgreSQL apporte quelques fonctionnalités supplémentaire qu’il peut être intéressant à exploiter avec Django (ex: <code class="docutils literal notranslate"><span class="pre">JSONField</span></code>)</p>
+<p>Pour configurer PostgreSQL, ce n’est pas vraiment plus compliqué. Il faut bien sur installer les dépendances sur votre machine :</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo apt-get update
+sudo apt-get install postgresql postgresql-contrib
+
+<span class="c1"># Au sein de notre virtualenv</span>
+pip install psycopg2
+</pre></div>
+</div>
+<p>NB : <code class="docutils literal notranslate"><span class="pre">psycopg2</span></code> serait à ajouter dans notre fichier <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code></p>
+<p>Il faut ensuite mettre à jour notre fichier <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s1">&#39;django.db.backends.postgresql&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;NAME&#39;</span><span class="p">:</span> <span class="s1">&#39;mydatabase&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;USER&#39;</span><span class="p">:</span> <span class="s1">&#39;mydatabaseuser&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;PASSWORD&#39;</span><span class="p">:</span> <span class="s1">&#39;mypassword&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;HOST&#39;</span><span class="p">:</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;PORT&#39;</span><span class="p">:</span> <span class="s1">&#39;5432&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Mais ce n’est pas tout, il faut également créer la base avec un utilisateur et un mot de passe :</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Connexion en tant qu&#39;utilisateur postgres</span>
+sudo -i -u postgres
+<span class="c1"># Ouverture d&#39;une console postgres</span>
+psql
+
+<span class="c1"># Le prompt devrait indiquer: postgres=#</span>
+CREATE USER &lt;nom_utilisateur&gt;<span class="p">;</span>
+ALTER ROLE &lt;nom_utilisateur&gt; WITH CREATEDB<span class="p">;</span>
+CREATE DATABASE &lt;nom_base_de_donnee&gt; OWNER &lt;nom_utilisateur&gt;<span class="p">;</span>
+ALTER USER &lt;nom_utilisateur&gt; WITH ENCRYPTED PASSWORD <span class="s1">&#39;mon_mot_de_passe&#39;</span><span class="p">;</span>
+
+<span class="c1"># Quitter la console</span>
+<span class="se">\q</span>
+
+<span class="c1"># Déconnecter l&#39;utilisateur postgres</span>
+<span class="nb">exit</span>
+</pre></div>
+</div>
+<p>Par simplicité, nous considérerons que nous sommes sur sqlite3 pour la suite mais les exemples sont valides dans les deux cas.</p>
+</div>
+<div class="section" id="les-modeles-en-django">
+<span id="les-modeles-en-django"></span><h1>Les modèles en Django<a class="headerlink" href="#les-modeles-en-django" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Les modèles en Django permettent de définir les objets que l’on va manipuler et stocker en base de données. La création des tables et la gestion du SQL est prise en main par Django via son ORM.</p>
+<p>Un modèle hérite de <code class="docutils literal notranslate"><span class="pre">django.db.models.Model</span></code>, il possède un manager par défaut qui permet d’interroger la base de données pour récupérer des listes d’objets (querysets), filtrer ces querysets ou simplement récupérer un objet.</p>
+<p>Un modèle possède également quelques méthodes pour créer/sauvegarder l’objet et effectuer quelques validations sur les champs.</p>
+<p>Les champs sont eux définis comme des attributs de la classe via des instanciations de «&nbsp;Field&nbsp;». Pour chaque type de champs, il existe un field associé qui est un objet défini dans Django qui se trouve également dans <code class="docutils literal notranslate"><span class="pre">django.db.models</span></code>.</p>
+<p>Cela semble un peu compliqué mais prenons un exemple simple.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Nous allons donc créer avec cette objet une table avec deux attributs :</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">author</span></code> qui sera une chaîne de caractères de longueur maximum 255</li>
+<li><code class="docutils literal notranslate"><span class="pre">pages</span></code> qui sera un entier positif avec 0 comme valeur par défaut</li>
+</ul>
+<p>Il existe de nombreux types de champs avec pour chacun un certain nombre d’options (<code class="docutils literal notranslate"><span class="pre">null</span></code>, <code class="docutils literal notranslate"><span class="pre">blank</span></code>, <code class="docutils literal notranslate"><span class="pre">default</span></code>, <code class="docutils literal notranslate"><span class="pre">verbose_name</span></code>, etc…). Le mieux est d’aller les découvrir sur la <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/fields/">documentation Django</a> directement.</p>
+<p>On a croisé deux types de champs très fréquent, <code class="docutils literal notranslate"><span class="pre">CharField</span></code> et <code class="docutils literal notranslate"><span class="pre">IntegerField</span></code>. Un autre type de champ très utile est le champ d’association. Il en existe plusieurs selon le type de relation (1-1, 1-n, n-n) qui sont respectivement <code class="docutils literal notranslate"><span class="pre">OneToOneField</span></code>, <code class="docutils literal notranslate"><span class="pre">ForeignKey</span></code>, <code class="docutils literal notranslate"><span class="pre">ManyToManyField</span></code>.</p>
+<p>Dans notre cas, supposons que nous voulions créer un modèle pour les auteurs et lier le livre à un ou plusieurs auteurs.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">authors</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Author</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Nous pouvons alors interagir avec nos objets et récupérer les données associées en base de données</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">my_app.models</span> <span class="kn">import</span> <span class="n">Author</span><span class="p">,</span> <span class="n">Book</span>
+
+
+<span class="n">john</span> <span class="o">=</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;John&quot;</span><span class="p">)</span>
+<span class="n">bob</span> <span class="o">=</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Bob&quot;</span><span class="p">)</span>
+
+<span class="n">book</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Rocking with Django&quot;</span><span class="p">)</span>
+<span class="n">book</span><span class="o">.</span><span class="n">authors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">john</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">book</span><span class="o">.</span><span class="n">authors</span><span class="o">.</span><span class="n">all</span><span class="p">()])</span>
+<span class="c1"># [&#39;John&#39;]</span>
+
+<span class="n">john</span><span class="o">.</span><span class="n">book_set</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="c1"># [&lt;Book: Book object&gt;]</span>
+</pre></div>
+</div>
+<div class="section" id="migrations">
+<span id="migrations"></span><h2>Migrations<a class="headerlink" href="#migrations" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Lors de la présentation de l’ORM en introduction, nous avons vu que Django fournissait un système de migrations qui nous permet de créer les tables SQL et apporter les modifications nécessaires quand les modèles sont modifiés.</p>
+<p>Les migrations permettent également de traiter les données (data migrations) pour ajuster les valeurs de certains modèles.</p>
+<p>Elles garantissent la stabilité et la cohérence des bases de données utilisées par l’application sur tous les environnements où le site peut être utilisé (local, dev, prod)</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configurer sa base</a></li>
+<li><a class="reference internal" href="#les-modeles-en-django">Les modèles en Django</a><ul>
+<li><a class="reference internal" href="#migrations">Migrations</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Les-modèles-Django.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Les-modèles-Django.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,150 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Exemple &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Un bloc est une partie d’un template que l’on nomme et que l’on délimite avec un tag.</p>
+<p>Un bloc peut être écraser par un template enfant sans écraser le reste du parent.</p>
+<p>On délimite un bloc avec le motif <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">block</span> <span class="pre">BLOC_NAME</span> <span class="pre">%}my</span> <span class="pre">content{%</span> <span class="pre">endblock</span> <span class="pre">BLOC_NAME</span> <span class="pre">%}</span></code> où <code class="docutils literal notranslate"><span class="pre">BLOC_NAME</span></code> est le nom du bloc, il ne doit contenir aucun caractères spéciaux ou caractères accentués, seulement des lettres, chiffres et le caractère <code class="docutils literal notranslate"><span class="pre">_</span></code>.</p>
+<div class="section" id="exemple">
+<span id="exemple"></span><h1>Exemple<a class="headerlink" href="#exemple" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Créons un fichier <code class="docutils literal notranslate"><span class="pre">skeleton.html</span></code> :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>My title<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    {% block content %}Default{% endblock content %}
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Ce sera le squelette de base des templates des pages. Toutes les pages filles qui étendront ce template pourront écraser le block content et bénéficier du reste du contenu.</p>
+<p>Créons le template <code class="docutils literal notranslate"><span class="pre">foo.html</span></code> :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% extends &quot;skeleton.html&quot; %}
+{% block content %}
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+{% endblock %}
+</pre></div>
+</div>
+<p>Produira le HTML suivant :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>My title<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Un bloc peut aussi récupérer le contenu de son parent sans l’écraser, pour ajouter des informations mais en conservant le HTML généré par le template parent.</p>
+<p>Par exemple le template <code class="docutils literal notranslate"><span class="pre">bar.html</span></code> suivant hérite de <code class="docutils literal notranslate"><span class="pre">foo.html</span></code> (et donc par cascade aussi de <code class="docutils literal notranslate"><span class="pre">skeleton.html</span></code>) :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% extends &quot;foo.html&quot; %}
+{% block content %}
+  {{ block.super }}
+  <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>This is SPARTAAAAA!<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+{% endblock %}
+</pre></div>
+</div>
+<p>Produira le HTML suivant :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Une page HTML<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>This is SPARTAAAAA!<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Celà se fait avec le motif <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">block.super</span> <span class="pre">}}</span></code> qu’on insère à l’intérieur du bloc dont on veut récupérer le contenu du parent.</p>
+<p>Attention il y a plusieurs choses à savoir sur les blocs :</p>
+<ul class="simple">
+<li>Le nom d’un bloc est unique à chaque template (une erreur sera levée en cas de duplicata)</li>
+<li>L’héritage d’un bloc est récursif, si un bloc hérite d’un bloc parent qui lui même hérite d’un autre bloc parent, le contenu des trois blocs est généré dans le HTML, l’héritage ne s’arrête pas juste au parent direct</li>
+<li>Un bloc peut rester vide</li>
+<li>Tout comme les variables, un bloc utilisé dans un template enfant mais qui n’existe pas dans un de ses templates parents ne provoquera aucun message d’erreur mais ne sera pas affiché</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Utilisation-des-blocs.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Utilisation-des-blocs.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

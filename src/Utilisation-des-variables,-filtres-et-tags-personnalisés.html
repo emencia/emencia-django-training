@@ -1,0 +1,132 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Variables &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Le principe des templates de Django est de reconnaître quatre types d’instructions :</p>
+<ul class="simple">
+<li>Les variables : avec le motif <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">mavariable</span> <span class="pre">}}</span></code></li>
+<li>Les tags : avec le motif <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">montag</span> <span class="pre">%}</span></code> ou bien le motif <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">montag</span> <span class="pre">%}...{%</span> <span class="pre">endmontag</span> <span class="pre">%}</span></code></li>
+<li>Les filtres qu’on peut adjoindre aux variables en utilisant le caractère |</li>
+<li>Les commentaires avec {# my commented line #}</li>
+</ul>
+<p>Les motifs <code class="docutils literal notranslate"><span class="pre">{{,</span> <span class="pre">}}</span></code>, <code class="docutils literal notranslate"><span class="pre">{%,</span> <span class="pre">%}</span></code>, <code class="docutils literal notranslate"><span class="pre">{#</span> <span class="pre">et</span> <span class="pre">#}</span></code> sont réservés, vous ne pouvez pas les utiliser pour autre chose.</p>
+<div class="section" id="variables">
+<span id="variables"></span><h1>Variables<a class="headerlink" href="#variables" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Une variable provoque simplement le remplacement de son motif par la valeur de la variable du même nom dans le contexte du template.</p>
+<p>Par défaut, Django échappe certains caractères du texte d’une variable pour éviter d’éventuels conflits avec le langage HTML:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&lt;</span></code> est converti en <code class="docutils literal notranslate"><span class="pre">&amp;lt;</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">&gt;</span></code> est converti en <code class="docutils literal notranslate"><span class="pre">&amp;gt;</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">'</span></code> est converti en <code class="docutils literal notranslate"><span class="pre">&amp;#39;</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;</span></code> est converti en <code class="docutils literal notranslate"><span class="pre">&amp;quot;</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">&amp;</span></code> est converti en <code class="docutils literal notranslate"><span class="pre">&amp;amp;</span></code></li>
+</ul>
+<p>NB: Le filtre <code class="docutils literal notranslate"><span class="pre">safe</span></code> permet d’empêcher ce comportement.</p>
+<p>Les variables inconnus (non présentes dans le contexte du template) ne provoquent aucun message d’erreur, Django supprime juste leur motif sans rien ajouter à la place.</p>
+</div>
+<div class="section" id="filtres">
+<span id="filtres"></span><h1>Filtres<a class="headerlink" href="#filtres" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Ils permettent de filtrer la valeur d’une variable avant de l’injecter dans le HTML. Le filtre ne modifie pas la variable elle-même, uniquement son rendu dans le template.</p>
+<p>On peut adjoindre un filtre à une variable en ajoutant un caractère <code class="docutils literal notranslate"><span class="pre">|</span></code> accolé après le nom de variable puis en ajoutant le filtre et ses arguments. Par exemple :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>{{ greetings|add:&quot; world!&quot; }}<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Si <code class="docutils literal notranslate"><span class="pre">greetings</span></code> vaut <code class="docutils literal notranslate"><span class="pre">'Hello'</span></code>, le résultat sera :</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;p&gt;Hello</span> <span class="pre">world!&lt;/p&gt;</span></code></p>
+<p>NB: Certains filtres n’acceptent pas d’arguments.</p>
+</div>
+<div class="section" id="tags">
+<span id="tags"></span><h1>Tags<a class="headerlink" href="#tags" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Ce sont les éléments qui permettent de générer des fragments de HTML ou de contrôler certaines conditions à respecter pour appliquer un contenu.</p>
+<p>En général les tags auto-fermés comme <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">montag</span> <span class="pre">%}</span></code> génèrent un fragment de HTML, et les tags à fermeture comme <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">montag</span> <span class="pre">%}...{%</span> <span class="pre">endmontag</span> <span class="pre">%}</span></code> conditionnent leur contenu. On ouvre un tag à fermeture avec sa balise ouvrante <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">montag</span> <span class="pre">%}</span></code>, on place son contenu puis on le ferme avec sa balise fermante <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">endmontag</span> <span class="pre">%}</span></code> qui est simplement le nom du tag précédé du mot <code class="docutils literal notranslate"><span class="pre">end</span></code>.</p>
+<p>Django possède déjà de nombreux tags dit «&nbsp;builtins&nbsp;», c’est à dire qu’ils sont directement disponibles dans le template sans travail supplémentaire de votre part.</p>
+<p>Mais une application peut embarquer ses propres tags supplémentaires (custom), il faut alors les pré-chargés au moyen d’un tag builtin nommé <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">load</span> <span class="pre">...</span> <span class="pre">%}</span></code>. La création d’un nouveau tag requiert du code Python.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Variables</a></li>
+<li><a class="reference internal" href="#filtres">Filtres</a></li>
+<li><a class="reference internal" href="#tags">Tags</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Utilisation-des-variables,-filtres-et-tags-personnalisés.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Utilisation-des-variables,-filtres-et-tags-personnalisés.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

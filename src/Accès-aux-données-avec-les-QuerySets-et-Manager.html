@@ -1,0 +1,189 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Les managers &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Après avoir vu comment générer nos modèles, il faut savoir comment interagir avec eux pour pouvoir exécuter des requêtes sur notre base de données.</p>
+<div class="section" id="les-managers">
+<span id="les-managers"></span><h1>Les managers<a class="headerlink" href="#les-managers" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Nous avons déjà aperçu un «&nbsp;manager&nbsp;» sans le nommer à de nombreuses reprises. En effet, <code class="docutils literal notranslate"><span class="pre">MyModel.objects</span></code> est un manager. Quand nous utilisions un <code class="docutils literal notranslate"><span class="pre">ManyToManyField</span></code>, <code class="docutils literal notranslate"><span class="pre">book.authors</span></code> est un “RelatedManager”. Si vous vous souvenez bien, nous avons d’ailleurs accéder à la liste des auteurs en appellant la méthode <code class="docutils literal notranslate"><span class="pre">all()</span></code>. On n’accède donc pas directement à l’attribut dans le cas d’un <code class="docutils literal notranslate"><span class="pre">ManyToManyField</span></code> mais à un manager.</p>
+<p>Ces manager permettent de fabriquer des requêtes et obtenir des querysets.</p>
+</div>
+<div class="section" id="les-querysets">
+<span id="les-querysets"></span><h1>Les querysets<a class="headerlink" href="#les-querysets" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Les querysets contiennent une suite d’instance et sont liés à un objet.</p>
+<p>Les querysets sont «&nbsp;lazy&nbsp;», c’est à dire qu’elles ne seront évaluées qu’à partir du moment où nous allons itérer dessus, demander leur affichage ou se servir des données des instances.</p>
+<p>Un queryset possède également quelques méthodes (<code class="docutils literal notranslate"><span class="pre">update</span></code>, “delete”) qui permettent d’appliquer certaines opérations à un ensemble d’objet plutôt que de la faire au cas par cas.</p>
+</div>
+<div class="section" id="exemples">
+<span id="exemples"></span><h1>Exemples<a class="headerlink" href="#exemples" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Prenons un exemple simple de modèle :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+
+<span class="k">class</span> <span class="nc">CustomPizza</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">number_of_extra_cheese</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">extra_mushrooms</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">extra_sauce</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">ordered_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">client_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;Pizza de {name}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Imaginons que nous avons un grand nombre de pizza en base et nous voulons faire quelques statistiques.
+<code class="docutils literal notranslate"><span class="pre">CustomPizza.objects</span></code> nous donne accès au manager du modèle qui possède de nombreuses méthodes.</p>
+<p>Explorons-en quelques unes :</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">all</span></code></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">CustomPizza.objects.all()</span></code> nous retournera une queryset contenant toutes les instances de CustomPizza présent en base.</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">none</span></code></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">CustomPizza.objects.all()</span></code> retourne une queryset vide.</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">filter</span></code> et <code class="docutils literal notranslate"><span class="pre">exclude</span></code></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">CustomPizza.objects.filter(client_name__icontains='chloé',</span> <span class="pre">extra_cheese=True,</span> <span class="pre">ordered_date__gt=yesterday)</span></code> retourne les pizzas commandées par un client donc le nom contient “Chloé” (le «&nbsp;i&nbsp;» signifie l’insensibilité à la casse), avec un supplément fromage et qui ont été commandé aujourd’hui (__gt: greater than).</p>
+<p>NB: <code class="docutils literal notranslate"><span class="pre">yesterday</span></code> n’a pas de sens en Django tel quel, il faut au préalable avoir défini une variable s’appelant <code class="docutils literal notranslate"><span class="pre">yesterday</span></code> et contenant une date.</p>
+<p>La liste des possibilités pour <code class="docutils literal notranslate"><span class="pre">filter</span></code> peut être récupérée  sur la documentation officielle, à la section sur les <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#id4"><code class="docutils literal notranslate"><span class="pre">field</span> <span class="pre">lookup</span></code></a></p>
+<p><code class="docutils literal notranslate"><span class="pre">exclude</span></code> fonctionne de manière similaire à filter mais exclu du queryset les instances non voulues. Ex: <code class="docutils literal notranslate"><span class="pre">CustomPizza.objects.exclude(client_name__icontains='test')</span></code></p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">get</span></code></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">CustomPizza.objects.get(pk=123)</span></code> récupère l’objet avec le pk (pk: primary key) 123.</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">create</span></code></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">CustomPizza.objects.create(client_name='Max',</span> <span class="pre">number_of_extra_cheese=5)</span></code> créé une nouvelle instance : une pizza commandé par “Max” avec 5 suppléments fromage. Miam.</p>
+</div>
+<div class="section" id="managers-custom-optimisations-des-requetes">
+<span id="managers-custom-optimisations-des-requetes"></span><h1>Managers custom &amp; optimisations des requêtes<a class="headerlink" href="#managers-custom-optimisations-des-requetes" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Un manager peut aussi être personnalisé et appliquer par exemple par défaut certains filtres pour ne pas avoir à les répéter continuellement.</p>
+<p>Par ailleurs, certains objets restent fortement dépendant d’autres objets. Si on reprends l’exemple d’un livre et des auteurs, il est très probable qu’en voulant afficher une liste de livres, nous allons afficher la liste de leurs auteurs. Cela résulte en une requête pour récupérer la liste des livres, puis une <strong>requête par livre</strong> pour obtenir la liste des auteurs. Cela peut très vite faire un grand nombre de requête et devenir limitant en terme de performance.</p>
+<p>Pour contrer ce genre de problème, il existe deux méthodes très importantes à maîtriser :</p>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#select-related"><code class="docutils literal notranslate"><span class="pre">select_related</span></code></a> pour précharger les données via une <code class="docutils literal notranslate"><span class="pre">ForeignKey</span></code></li>
+<li><a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#prefetch-related"><code class="docutils literal notranslate"><span class="pre">prefetch_related</span></code></a> pour précharger les données via un <code class="docutils literal notranslate"><span class="pre">ManyToManyField</span></code></li>
+</ul>
+<div class="section" id="exemple">
+<span id="exemple"></span><h2>Exemple<a class="headerlink" href="#exemple" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Nous pouvons vouloir sur une interface afficher toutes nos pizzas et proposer au client de les supprimer. Pour pouvoir garder en mémoire toutes les pizzas pour calculer des statistiques, il peut être intéressant de ne pas supprimer les pizzas mais de leur ajouter un attribut <code class="docutils literal notranslate"><span class="pre">display</span></code> (<code class="docutils literal notranslate"><span class="pre">models.BooleanField(default=True)</span></code>) et au moment de la suppression, ne pas faire de suppression en base de données mais mettre à jour ce flag.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DisplayQuerySet</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">QuerySet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">display</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">display</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">DisplayManager</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Manager</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">display</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">DisplayQuerySet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">CustomPizza</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+   <span class="o">...</span>
+   <span class="n">objects</span> <span class="o">=</span> <span class="n">DisplayManager</span><span class="p">()</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<p>Ici, nous avons choisi de remplacer le manager par défaut (<code class="docutils literal notranslate"><span class="pre">objects</span></code>) par un manager de notre choix. Il possède une méthode supplémentaire: <code class="docutils literal notranslate"><span class="pre">display</span></code>. Ainsi nous pouvons appeler <code class="docutils literal notranslate"><span class="pre">CustomPizza.objects.display()</span></code> et nous obtenons les pizzas qui sont destinées à être affichées. Un appel à la méthode <code class="docutils literal notranslate"><span class="pre">delete</span></code> ne va pas supprimer en base les Pizza mais changer la valeur du booléen <code class="docutils literal notranslate"><span class="pre">display</span></code></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Les managers</a></li>
+<li><a class="reference internal" href="#les-querysets">Les querysets</a></li>
+<li><a class="reference internal" href="#exemples">Exemples</a></li>
+<li><a class="reference internal" href="#managers-custom-optimisations-des-requetes">Managers custom &amp; optimisations des requêtes</a><ul>
+<li><a class="reference internal" href="#exemple">Exemple</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Accès-aux-données-avec-les-QuerySets-et-Manager.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Accès-aux-données-avec-les-QuerySets-et-Manager.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

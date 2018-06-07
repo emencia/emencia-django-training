@@ -1,0 +1,121 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Génération du premier fichier .po d’une langue &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>La gestion des fichiers de langue (.po) s’effectue en 3 temps :</p>
+<div class="section" id="generation-du-premier-fichier-po-d-une-langue">
+<span id="generation-du-premier-fichier-po-d-une-langue"></span><h1>Génération du premier fichier .po d’une langue<a class="headerlink" href="#generation-du-premier-fichier-po-d-une-langue" title="Lien permanent vers ce titre">¶</a></h1>
+<p><em>Cette étape est à effectuer uniquement la première fois.</em></p>
+<p>A la racine du projet, entrez la commande suivante :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">django</span><span class="o">-</span><span class="n">instance</span> <span class="n">makemessages</span> <span class="o">-</span><span class="n">l</span> <span class="p">[</span><span class="n">code</span> <span class="n">de</span> <span class="n">langue</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Exemple pour le premier fichier de langue FR :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">django</span><span class="o">-</span><span class="n">instance</span> <span class="n">makemessages</span> <span class="o">-</span><span class="n">l</span> <span class="n">fr</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="mettre-a-jour-le-po">
+<span id="mettre-a-jour-le-po"></span><h1>Mettre à jour le PO<a class="headerlink" href="#mettre-a-jour-le-po" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Lorsque des blocs de traductions ont été ajoutés ou modifiés, pour modifier les fichiers .po existant, entrez la commande suivante :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">django</span><span class="o">-</span><span class="n">instance</span> <span class="n">makemessages</span> <span class="o">-</span><span class="n">a</span>
+</pre></div>
+</div>
+<p>Cela va régénérer les fichiers .po en conservant au maximum les traductions précédentes.</p>
+</div>
+<div class="section" id="compiler-les-po">
+<span id="compiler-les-po"></span><h1>Compiler les PO<a class="headerlink" href="#compiler-les-po" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Une fois les modifications effectuées dans les .po il vous faudra les compiler. Pour cela, placez vous à la racine du projet et entrez la commande suivante :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">django</span><span class="o">-</span><span class="n">instance</span> <span class="n">compilemessages</span>
+</pre></div>
+</div>
+<p>Vous obtiendrez alors des fichiers .mo qui seront utilisés pour la traduction.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Génération du premier fichier .po d’une langue</a></li>
+<li><a class="reference internal" href="#mettre-a-jour-le-po">Mettre à jour le PO</a></li>
+<li><a class="reference internal" href="#compiler-les-po">Compiler les PO</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Gestion-des-fichiers-de-langues.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Gestion-des-fichiers-de-langues.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

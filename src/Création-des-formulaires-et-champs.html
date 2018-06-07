@@ -1,0 +1,181 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Les champs &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Un «&nbsp;Form&nbsp;» ou un «&nbsp;ModelForm&nbsp;» sont des classes django qui héritent respectivement de <code class="docutils literal notranslate"><span class="pre">forms.Form</span></code> et <code class="docutils literal notranslate"><span class="pre">forms.ModelForm</span></code>.</p>
+<p>Par convention, les formulaires sont souvent stockés dans un fichier <code class="docutils literal notranslate"><span class="pre">forms.py</span></code>.</p>
+<div class="section" id="les-champs">
+<span id="les-champs"></span><h1>Les champs<a class="headerlink" href="#les-champs" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Ils possèdentalors en attribut un certain nombre de champs («&nbsp;Field&nbsp;») et sont accessible via <code class="docutils literal notranslate"><span class="pre">forms</span></code>. On retrouve la même logique dans les formulaires qu’avec les modèles.</p>
+<p>Exemple :</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">models.Model</span></code> et <code class="docutils literal notranslate"><span class="pre">models.CharField</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">forms.Form</span></code> et <code class="docutils literal notranslate"><span class="pre">forms.CharField</span></code></li>
+</ul>
+<p>La liste de champs disponibles est accessible sur la <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/forms/fields">documentation officielle</a>.</p>
+</div>
+<div class="section" id="forms-form">
+<span id="forms-form"></span><h1>forms.Form<a class="headerlink" href="#forms-form" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Commençons avec un exemple, un formulaire simple de contact :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+
+
+<span class="k">class</span> <span class="nc">ContactForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">EmailField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Ici nous créons un formulaire avec un email et un message. Il existe alors déjà une certaine validation qui est inhérente aux champs utilisés.</p>
+<p>Voici un exemple avec une simple vue et un template :</p>
+<p>vue :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">FormView</span>
+
+<span class="kn">from</span> <span class="nn">.forms</span> <span class="kn">import</span> <span class="n">ContactForm</span>
+
+
+<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">FormView</span><span class="p">):</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;form.html&#39;</span>
+    <span class="n">form_class</span> <span class="o">=</span> <span class="n">ContactForm</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">form.html</span></code> :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">&gt;</span>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&#39;OK&#39;</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>En plus d’appeler la variable <code class="docutils literal notranslate"><span class="pre">form</span></code>, on appelle la méthode <code class="docutils literal notranslate"><span class="pre">as_p</span></code> qui utilise alors des balises <code class="docutils literal notranslate"><span class="pre">&lt;p&gt;</span></code> pour rendre les champs.</p>
+<p>Le html qui est obtenu est alors le suivant :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#39;hidden&#39;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#39;csrfmiddlewaretoken&#39;</span> <span class="na">value</span><span class="o">=</span><span class="s">&#39;2xOEbwIO5boqbcocGXiFrOJU4MoWkjrtjeTNN8O49VQ9g7HeWrtGKfvypdeG4Ve3&#39;</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;id_email&quot;</span><span class="p">&gt;</span>Email:<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;email&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;email&quot;</span> <span class="na">required</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;id_email&quot;</span> <span class="p">/&gt;&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;id_message&quot;</span><span class="p">&gt;</span>Message:<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">textarea</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;message&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;id_message&quot;</span> <span class="na">rows</span><span class="o">=</span><span class="s">&quot;10&quot;</span> <span class="na">cols</span><span class="o">=</span><span class="s">&quot;40&quot;</span> <span class="na">required</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">textarea</span><span class="p">&gt;&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&#39;OK&#39;</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Et voici le rendu qu’on obtient côté client :</p>
+<p><img alt="Contact Form screenshot" src="https://docs.google.com/drawings/d/e/2PACX-1vSsfZCnU6egKbCmn2Bgb14xsoxIPvladr4Y8fjd-0vIrZs6IHTisYQY8SvS85BXOUJDLySbXQhrNcZq/pub?w=390&amp;h=268" /></p>
+<p>A noter que toute customisation graphique peut être obtenu avec l’ajout de css. Par ailleurs il existe des librairies tierces qui permettent de mettre en forme les formulaires de manière plus subtile. Voir notamment <a class="reference external" href="http://django-crispy-forms.readthedocs.io/en/latest/">django-crispy-form</a>.</p>
+</div>
+<div class="section" id="forms-modelform">
+<span id="forms-modelform"></span><h1>forms.ModelForm<a class="headerlink" href="#forms-modelform" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Un <code class="docutils literal notranslate"><span class="pre">ModelForm</span></code> est un outil précieux. Prenons un exemple simple</p>
+<p><code class="docutils literal notranslate"><span class="pre">my_app/models.py</span></code> :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span> 
+
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">birth_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Pour créer une nouvelle instance de ce modèle via l’interface, on s’attend très probablement à remplir un formulaire avec <code class="docutils literal notranslate"><span class="pre">name</span></code> et <code class="docutils literal notranslate"><span class="pre">birth_date</span></code>. On peut alors créer un formulaire avec ces deux champs. En réalité, Django propose de créer un formulaire <strong>à partir</strong> d’un modèle. Il suffit de préciser les champs voulus et tous les champs sont déduits du modèle.</p>
+<p><code class="docutils literal notranslate"><span class="pre">my_app/forms.py</span></code> :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Person</span>
+
+
+<span class="k">class</span> <span class="nc">PersonForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Person</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="s1">&#39;__all__&#39;</span>
+</pre></div>
+</div>
+<p>C’est un gain de temps incroyable. La logique étant déjà présente dans les modèles, pas de répétition. On ne spécifie que le modèle visé et les champs qui nous intéressent.</p>
+<p>C’est cette méthode qui est utilisée par les Class-Based-View ou encore dans l’admin de Django. Cependant, le vice est poussé encore plus loin et avec les CBV et l’interface admin de Django.</p>
+<p>En effet avec les <code class="docutils literal notranslate"><span class="pre">UpdateView</span></code> et les <code class="docutils literal notranslate"><span class="pre">CreateView</span></code> ou encore les vues d’admin (détaillé plus loin dans ce cours), il suffit de spécifier un modèle à la vue et le <code class="docutils literal notranslate"><span class="pre">ModelForm</span></code> sera automatiquement déduit. Il n’est pas nécessaire de le créer soit même.</p>
+<p>En revanche, dès qu’un petit peu de customisation est nécessaire (validation, présentation, initialisation, etc…), il faudra écrire les formulaires et les passer en arguments aux vues.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Les champs</a></li>
+<li><a class="reference internal" href="#forms-form">forms.Form</a></li>
+<li><a class="reference internal" href="#forms-modelform">forms.ModelForm</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Création-des-formulaires-et-champs.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Création-des-formulaires-et-champs.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

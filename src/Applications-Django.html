@@ -1,0 +1,131 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Gérer ses applications avec Django &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Les projets écrit avec Django s’articulent en général autour de plusieurs modules ou application.</p>
+<p>Une application représente en général une fonctionnalité ou un ensemble de fonctionnalités. Une application reste autant que possible indépendantes des autres applications. Par exemple, votre moteur de blog n’a pas besoin de savoir comment fonctionne votre facturation. Chaque application a un but précis et peut être utilisée et testée de manière autonome.</p>
+<p>Exemples : authentication, blog, api…</p>
+<p>Cela représente plusieurs intérêts :</p>
+<ul class="simple">
+<li>Une même application peut être utilisée pour plusieurs projets Django</li>
+<li>Une application peut être publiée sur <a class="reference external" href="https://pypi.org/">PyPI</a> pour être utilisée par tout le monde</li>
+<li>Une application peut facilement être remplacée par une application similaire</li>
+<li>Une application peut facilement être activée/désactivée</li>
+<li>Des équipes différentes peuvent travailler en parallèle, une équipe par application par exemple</li>
+<li>La séparation des différentes fonctionnalités en application permet une organisation plus saine</li>
+</ul>
+<p>Cette approche n’est pas particulière à Django et on la retrouve dans de nombreux frameworks.</p>
+<p>S’il est possible de créer une application unique au sein de son projet Django, cela reste fortement déconseillé.
+Nous verrons à travers les exemples comment découper son application en module et comment les gérer.</p>
+<div class="section" id="gerer-ses-applications-avec-django">
+<span id="gerer-ses-applications-avec-django"></span><h1>Gérer ses applications avec Django<a class="headerlink" href="#gerer-ses-applications-avec-django" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Django fournit une commande pour créer une application :</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Creates a new app named my_app_name in your django project</span>
+python manage.py startapp my_app_name
+</pre></div>
+</div>
+<p>Un nouveau dossier est alors ajouté à votre projet. Pour que Django le prenne en compte, vous devrez probablement ajouter votre application à la liste des applications dites installées. Pour cela, rendez-vous dans le fichiers <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>.</p>
+<p>Vous avez dans ce fichier une liste similaire à la suivante :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;django.contrib.admin&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.contenttypes&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.sessions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.messages&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.sites&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.staticfiles&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Vous pouvez ajouter le nom de votre application à la fin de cette liste et Django le prendra alors en compte.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span>
+    <span class="s1">&#39;my_app_name&#39;</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Les urls définies à l’intérieur de cette application seront alors disponibles, les tests seront collectés et lancés avec les autres, les assets et templates de l’application pourront être utilisés etc…</p>
+<p>L’ordre des applications dans cette liste peut avoir une importance non négligeable mais vous n’aurez pas à vous en soucier dans la majorité des cas. Si vous installez une bibliothèque dont l’ordre dans la liste est important (ex: être placé avant <code class="docutils literal notranslate"><span class="pre">django.contrib.auth</span></code>) la documentation de l’installation en fera mention.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Applications-Django.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Applications-Django.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

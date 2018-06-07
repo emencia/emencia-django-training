@@ -1,0 +1,332 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Quelques pré-requis &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Nous avons vu beaucoup de choses dans les chapitres précédents ainsi que leur travaux pratiques mais nous avons éviter un des points les plus essentiels : le <strong>déploiement</strong> !</p>
+<p>Il est insensé d’essayer de devenir un bon développeur Django sans pouvoir déployer son projet sur un serveur en production. Tout l’intérêt d’un site est d’être disponible par tous. Par ailleurs, il y a nombre de difficultés qui ne se rencontrent qu’à partir du moment ou le site est en ligne. La première difficulté rencontrée étant en général… l’utilisateur lui-même qui se comporte rarement comme prévu initialement !</p>
+<div class="section" id="quelques-pre-requis">
+<span id="quelques-pre-requis"></span><h1>Quelques pré-requis<a class="headerlink" href="#quelques-pre-requis" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Il existe une commande Django qui permet de vérifier un certain nombre de paramètre avant la mise en production <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">check</span> <span class="pre">--deploy</span></code></p>
+<p>Il faut notamment d’assurer d’avoir une clé secrète (<code class="docutils literal notranslate"><span class="pre">settings.SECRET_KEY</span></code>) qui soit suffisamment aléatoire, longue et bien entendue <strong>confidentielle</strong>.</p>
+<p>Il faut également s’assurer que <code class="docutils literal notranslate"><span class="pre">settings.DEBUG</span> <span class="pre">=</span> <span class="pre">False</span></code>. Laisser l’option de debug en production peut être catastrophique.</p>
+<p>Une checklist plus exhaustive de paramètre à vérifier est disponible… sur <a class="reference external" href="https://docs.djangoproject.com/fr/1.11/howto/deployment/checklist/">la documentation officielle</a></p>
+</div>
+<div class="section" id="les-points-de-friction">
+<span id="les-points-de-friction"></span><h1>Les points de friction<a class="headerlink" href="#les-points-de-friction" title="Lien permanent vers ce titre">¶</a></h1>
+<p>On retrouve souvent les mêmes problèmes lors des premières mises en production :</p>
+<ul class="simple">
+<li>La gestion des fichiers statiques (on peut utiliser directement nginx ou apache pour ce point)</li>
+<li>La base de données (permissions et problème de chemin) et bien entendu… Persistance de la base entre les déploiements</li>
+<li>Dépendances : il faut s’assurer que nous avons les bonnes versions pour chaque bibliothèque</li>
+</ul>
+</div>
+<div class="section" id="deployer">
+<span id="deployer"></span><h1>Déployer<a class="headerlink" href="#deployer" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Il est possible de déployer un projet django de mille manières différentes selon vos envies et besoin.</p>
+<p>Django propose dans sa documentation 4 méthodes différentes pour le déploiement :</p>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.djangoproject.com/fr/1.11/howto/deployment/wsgi/modwsgi">Django avec Apache et mod_wsgi</a></li>
+<li><a class="reference external" href="https://docs.djangoproject.com/fr/1.11/howto/deployment/wsgi/apache-auth">Authentification sur la base de données des utilisateurs de Django depuis Apache</a></li>
+<li><a class="reference external" href="https://docs.djangoproject.com/fr/1.11/howto/deployment/wsgi/gunicorn/">Déploiement de Django avec Gunicorn</a></li>
+<li><a class="reference external" href="https://docs.djangoproject.com/fr/1.11/howto/deployment/wsgi/uwsgi/">Déploiement de Django avec uWSGI</a></li>
+</ul>
+<p>Il vous faudra très certainement, en plus de Django et d’une solution parmi celles proposées ci-dessus configurer Apache ou Nginx sur votre serveur.</p>
+<div class="section" id="un-exemple-complet-avec-nginx-et-gunicorn">
+<span id="un-exemple-complet-avec-nginx-et-gunicorn"></span><h2>Un exemple complet avec Nginx et Gunicorn<a class="headerlink" href="#un-exemple-complet-avec-nginx-et-gunicorn" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="section" id="choisir-un-serveur">
+<span id="choisir-un-serveur"></span><h3>Choisir un serveur<a class="headerlink" href="#choisir-un-serveur" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Ce choix reste personnel, vous pouvez avoir votre propre serveur, en louer un à OVH, Amazon, Rackspace, utiliser un Raspberry Pi etc…</p>
+<p>Cela a peu d’importance. Dans le cadre de cet exemple, nous supposons :</p>
+<p>Le serveur tourne sous Ubuntu 16</p>
+<ul class="simple">
+<li>Vous avez un accès root sur la machine</li>
+<li>Vous pouvez accéder à la machine via SSH</li>
+<li>Il est accessible sur Internet</li>
+</ul>
+<p>Je vais faire l’hypothèse par la suite que vous utilisez un utilisateur non root mais avec les droits «&nbsp;sudo&nbsp;».</p>
+<p>Pour créer le votre depuis le serveur :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ces commandes doivent être lancées en tant qu&#39;utilisateur root</span>
+<span class="n">useradd</span> <span class="o">-</span><span class="n">m</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span> <span class="n">ad</span> <span class="c1"># Ajoute un utilisateur appelé ad, crée un répertoire home (-m) et utilise bash par défaut</span>
+<span class="n">usermod</span> <span class="o">-</span><span class="n">a</span> <span class="o">-</span><span class="n">G</span> <span class="n">sudo</span> <span class="n">ad</span> <span class="c1"># add ad to the sudoers group</span>
+<span class="n">passwd</span> <span class="n">ad</span> <span class="c1"># set password</span>
+<span class="n">su</span> <span class="o">-</span> <span class="n">ad</span> <span class="c1"># Changer d&#39;utilisateur pour ad</span>
+<span class="c1">## On doit avoir alors quelque chose comme : &quot;ad@server $&quot;</span>
+</pre></div>
+</div>
+<p>Vous pouvez dès à présent ajouter votre clé ssh pour pouvoir vous connecter à cette machine rapidement depuis votre machine de développement.</p>
+</div>
+<div class="section" id="installer-nginx">
+<span id="installer-nginx"></span><h3>Installer <code class="docutils literal notranslate"><span class="pre">Nginx</span></code><a class="headerlink" href="#installer-nginx" title="Lien permanent vers ce titre">¶</a></h3>
+<p>L’installation et le démarrage de nginx est rapide et simple.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">nginx</span>
+<span class="n">sudo</span> <span class="n">service</span> <span class="n">nginx</span> <span class="n">start</span>
+</pre></div>
+</div>
+<p>Si vous allez à l’adresse IP dans votre navigateur, vous devriez voir une page d’accueil nginx.
+Tant que nous en sommes à installer quelques dépendances, ajoutons :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">git</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
+<span class="n">sudo</span> <span class="n">pip3</span> <span class="n">install</span> <span class="n">virtualenv</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="enregistrement-des-a-record">
+<span id="enregistrement-des-a-record"></span><h3>Enregistrement des A-Record<a class="headerlink" href="#enregistrement-des-a-record" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Pour éviter d’avoir à retenir l’adresse IP par cœur, on peut ajouter des A-Record pour lier l’adresse IP à un nom de domaine. Il vous faudra éventuellement acheter un nom de domaine si vous n’en avez pas.</p>
+</div>
+<div class="section" id="recuperer-le-code-depuis-le-dossier-git">
+<span id="recuperer-le-code-depuis-le-dossier-git"></span><h3>Récupérer le code depuis le dossier <code class="docutils literal notranslate"><span class="pre">git</span></code><a class="headerlink" href="#recuperer-le-code-depuis-le-dossier-git" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Nous avons besoin de stocker notre projet <code class="docutils literal notranslate"><span class="pre">git</span></code>, créons un dossier dans notre «&nbsp;home&nbsp;».</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># En tant qu&#39;utilisateur ad</span>
+<span class="n">pwd</span>  <span class="c1"># /home/ad/</span>
+<span class="n">mkdir</span> <span class="n">projects</span> <span class="o">&amp;&amp;</span> <span class="n">cd</span> <span class="s2">&quot;$_&quot;</span>
+<span class="n">git</span> <span class="n">pull</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">emencia</span><span class="o">/</span><span class="n">my_site</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>A ce stade, vous aurez éventuellement besoin d’ajouter la clé ssh de votre serveur vers github.</p>
+</div>
+<div class="section" id="installer-un-virtualenv">
+<span id="installer-un-virtualenv"></span><h3>Installer un <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code><a class="headerlink" href="#installer-un-virtualenv" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Avant d’installer nos dépendances, nous allons créer un <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> pour isoler nos dépendances du reste du système.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip3</span> <span class="n">install</span> <span class="n">virtualenv</span>
+<span class="n">cd</span> <span class="n">emencia</span><span class="o">-</span><span class="n">django</span><span class="o">-</span><span class="n">training</span>
+<span class="n">mkdir</span> <span class="n">virtualenv</span>
+<span class="n">virtualenv</span> <span class="o">--</span><span class="n">python</span><span class="o">=</span><span class="n">python3</span> <span class="n">virtualenv</span>
+</pre></div>
+</div>
+<p>A ce stade, vous pouvez installer <code class="docutils literal notranslate"><span class="pre">virtualenvwrapper</span></code> qui vous facilitera un peu la vie.</p>
+</div>
+<div class="section" id="installer-les-dependances">
+<span id="installer-les-dependances"></span><h3>Installer les dépendances<a class="headerlink" href="#installer-les-dependances" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Activer votre <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> et installer vos dépendances.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">virtualenv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="migrate-et-collectstatic">
+<span id="migrate-et-collectstatic"></span><h3><code class="docutils literal notranslate"><span class="pre">migrate</span></code> et <code class="docutils literal notranslate"><span class="pre">collectstatic</span></code><a class="headerlink" href="#migrate-et-collectstatic" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Maintenant que Django est installé, nous pouvons migrer et collecter les fichier statiques.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">migrate</span>
+<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">collectstatic</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="debug-allowed-hosts-et-secret-key">
+<span id="debug-allowed-hosts-et-secret-key"></span><h3>DEBUG, ALLOWED_HOSTS et SECRET_KEY<a class="headerlink" href="#debug-allowed-hosts-et-secret-key" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Il faut s’assurer dans le fichier <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="bp">False</span>  <span class="c1"># DEBUG doit être false pour la production</span>
+
+<span class="n">ALLOWED_HOSTS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;my_site.fr&#39;</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">]</span>  <span class="c1"># Il ne faut pas oublier d&#39;ajouter son url dans les allowed_hosts</span>
+<span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="s1">&#39;AhjkLGd(gDYTs#gfUGKl-jh^26azUFhjkkG54&#39;</span>  <span class="c1"># la clé secrète doit rester confidentielle. Elle peut éventuellement être récupérée depuis une variable d&#39;environnement.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configurer-nginx">
+<span id="configurer-nginx"></span><h3>Configurer <code class="docutils literal notranslate"><span class="pre">Nginx</span></code><a class="headerlink" href="#configurer-nginx" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Nous allons maintenant configurer nginx pour qu’il redirige les utilisateurs vers notre application Django.</p>
+<p>Créons le fichier <code class="docutils literal notranslate"><span class="pre">my_site.fr</span></code> dans le répertoire <code class="docutils literal notranslate"><span class="pre">/etc/nginx/sites-available</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">server</span> <span class="p">{</span>
+    <span class="n">listen</span> <span class="mi">80</span><span class="p">;</span>
+    <span class="n">server_name</span> <span class="n">my_site</span><span class="o">.</span><span class="n">fr</span><span class="p">;</span>
+
+    <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
+        <span class="n">proxy_pass</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8000</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>puis</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export SITENAME=my_site.fr
+sudo ln -s /etc/nginx/sites-available/$SITENAME /etc/nginx/sites-enabled/$SITENAME
+</pre></div>
+</div>
+<p>Nous pouvons à ce stade enlever la configuration par défaut pour ne plus avoir la page nginx : <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">rm</span> <span class="pre">/etc/nginx/sites-enabled/default</span></code></p>
+<p>Pour voir notre application en live :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">nginx</span> <span class="n">reload</span>
+<span class="c1"># dans le dossier de notre projet</span>
+<span class="o">./</span><span class="n">virtualenv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python3</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">runserver</span>
+</pre></div>
+</div>
+<p>Nous devrions avoir notre application qui tourne à l’adresse <code class="docutils literal notranslate"><span class="pre">my_site.fr</span></code> !</p>
+<p>Par contre, nous ne sommes pas encore dans une configuration optimale pour la production, c’était ici pour tester ce qu’on a mis en place. Nous n’allons pas lancer le serveur à la main et utiliser le serveur de développement de Django.</p>
+</div>
+<div class="section" id="installer-gunicorn">
+<span id="installer-gunicorn"></span><h3>Installer <code class="docutils literal notranslate"><span class="pre">Gunicorn</span></code><a class="headerlink" href="#installer-gunicorn" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Nous allons maintenant installer <code class="docutils literal notranslate"><span class="pre">gunicorn</span></code> (s’il n’est pas déjà installé). Ajoutons le dans le fichier <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> s’il n’est pas déjà présent.</p>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code> fera donc l’affaire.</p>
+</div>
+<div class="section" id="lancer-gunicorn">
+<span id="lancer-gunicorn"></span><h3>Lancer <code class="docutils literal notranslate"><span class="pre">Gunicorn</span></code><a class="headerlink" href="#lancer-gunicorn" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Gunicorn est une implémentation en python d’un serveur d’application WSGI.</p>
+<p>Pour lancer l’application, <code class="docutils literal notranslate"><span class="pre">gunicorn</span></code> a besoin d’un chemin vers l’application wsgi.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">virtualenv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">gunicorn</span> <span class="n">my_site</span><span class="o">.</span><span class="n">wsgi</span><span class="p">:</span><span class="n">application</span>
+</pre></div>
+</div>
+<p>Avec cette commande, le site doit à nouveau être accessible à son URL. Cependant, les fichiers statiques ne sont pas accessible.</p>
+</div>
+<div class="section" id="servir-les-fichiers-statiques-avec-nginx">
+<span id="servir-les-fichiers-statiques-avec-nginx"></span><h3>Servir les fichiers statiques avec <code class="docutils literal notranslate"><span class="pre">Nginx</span></code><a class="headerlink" href="#servir-les-fichiers-statiques-avec-nginx" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Il faut mettre à jour notre configuration nginx pour servir les fichiers statiques.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">server</span> <span class="p">{</span>
+    <span class="n">listen</span> <span class="mi">80</span><span class="p">;</span>
+    <span class="n">server_name</span> <span class="n">my_site</span><span class="o">.</span><span class="n">fr</span><span class="p">;</span>
+
+    <span class="n">location</span> <span class="o">/</span><span class="n">static</span> <span class="p">{</span>
+        <span class="n">alias</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ad</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">my_site</span><span class="o">.</span><span class="n">fr</span><span class="o">/</span><span class="n">static</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
+        <span class="n">proxy_pass</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8000</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Relançons <code class="docutils literal notranslate"><span class="pre">nginx</span></code> et <code class="docutils literal notranslate"><span class="pre">gunicorn</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">nginx</span> <span class="n">reload</span>
+<span class="o">./</span><span class="n">virtualenv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">gunicorn</span> <span class="n">my_site</span><span class="o">.</span><span class="n">wsgi</span><span class="p">:</span><span class="n">application</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="utilisation-de-upstart">
+<span id="utilisation-de-upstart"></span><h3>Utilisation de upstart<a class="headerlink" href="#utilisation-de-upstart" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Nous allons maintenant nous assurer que notre serveur lance Gunicorn au démarrage et le relance s’il crashe.</p>
+<p>Créons le fichier <code class="docutils literal notranslate"><span class="pre">/etc/init/my_site.fr.conf</span></code> :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">description</span> <span class="s2">&quot;Configuration de Gunicorn pour my_site.fr&quot;</span>
+
+<span class="n">start</span> <span class="n">on</span> <span class="n">net</span><span class="o">-</span><span class="n">device</span><span class="o">-</span><span class="n">up</span>
+<span class="n">stop</span> <span class="n">on</span> <span class="n">shutdown</span>
+
+<span class="n">respawn</span>
+
+<span class="n">setuid</span> <span class="n">ad</span>
+<span class="n">chdir</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ad</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">my_site</span><span class="o">/</span>
+
+<span class="n">exec</span> <span class="o">./</span><span class="n">virtualenv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">gunicorn</span> <span class="n">my_site</span><span class="o">.</span><span class="n">wsgi</span><span class="p">:</span><span class="n">application</span>
+</pre></div>
+</div>
+<p>Nous pouvons maintenant lancer notre application avec :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">start</span> <span class="n">my_site</span><span class="o">.</span><span class="n">fr</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="derniere-tache">
+<span id="derniere-tache"></span><h3>Dernière tache<a class="headerlink" href="#derniere-tache" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Automatiser toutes les taches précédentes  !</p>
+</div>
+</div>
+</div>
+<div class="section" id="automatisation">
+<span id="automatisation"></span><h1>Automatisation<a class="headerlink" href="#automatisation" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Le déploiement est une chose qui peut devenir très rébarbative, en particulier quand on commence à mettre en production de manière régulière. L’automatisation du déploiement permet de se concentrer sur ce qui fait des applications une plus-value pour nos utilisateurs.</p>
+<p>Notons ici que nous n’avons pas aborder la configuration (et son automatisation) de la machine (ou des machines) qui sert de serveur de production.</p>
+<p>Il existe de nombreux outils d’automatisation tels que <a class="reference external" href="http://www.fabfile.org/"><code class="docutils literal notranslate"><span class="pre">Fabric</span></code></a> ou encore <a class="reference external" href="https://www.ansible.com/"><code class="docutils literal notranslate"><span class="pre">Ansible</span></code></a> qui vous feront gagner un temps précieux.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Quelques pré-requis</a></li>
+<li><a class="reference internal" href="#les-points-de-friction">Les points de friction</a></li>
+<li><a class="reference internal" href="#deployer">Déployer</a><ul>
+<li><a class="reference internal" href="#un-exemple-complet-avec-nginx-et-gunicorn">Un exemple complet avec Nginx et Gunicorn</a><ul>
+<li><a class="reference internal" href="#choisir-un-serveur">Choisir un serveur</a></li>
+<li><a class="reference internal" href="#installer-nginx">Installer <code class="docutils literal notranslate"><span class="pre">Nginx</span></code></a></li>
+<li><a class="reference internal" href="#enregistrement-des-a-record">Enregistrement des A-Record</a></li>
+<li><a class="reference internal" href="#recuperer-le-code-depuis-le-dossier-git">Récupérer le code depuis le dossier <code class="docutils literal notranslate"><span class="pre">git</span></code></a></li>
+<li><a class="reference internal" href="#installer-un-virtualenv">Installer un <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code></a></li>
+<li><a class="reference internal" href="#installer-les-dependances">Installer les dépendances</a></li>
+<li><a class="reference internal" href="#migrate-et-collectstatic"><code class="docutils literal notranslate"><span class="pre">migrate</span></code> et <code class="docutils literal notranslate"><span class="pre">collectstatic</span></code></a></li>
+<li><a class="reference internal" href="#debug-allowed-hosts-et-secret-key">DEBUG, ALLOWED_HOSTS et SECRET_KEY</a></li>
+<li><a class="reference internal" href="#configurer-nginx">Configurer <code class="docutils literal notranslate"><span class="pre">Nginx</span></code></a></li>
+<li><a class="reference internal" href="#installer-gunicorn">Installer <code class="docutils literal notranslate"><span class="pre">Gunicorn</span></code></a></li>
+<li><a class="reference internal" href="#lancer-gunicorn">Lancer <code class="docutils literal notranslate"><span class="pre">Gunicorn</span></code></a></li>
+<li><a class="reference internal" href="#servir-les-fichiers-statiques-avec-nginx">Servir les fichiers statiques avec <code class="docutils literal notranslate"><span class="pre">Nginx</span></code></a></li>
+<li><a class="reference internal" href="#utilisation-de-upstart">Utilisation de upstart</a></li>
+<li><a class="reference internal" href="#derniere-tache">Dernière tache</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#automatisation">Automatisation</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Deploiement.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Deploiement.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

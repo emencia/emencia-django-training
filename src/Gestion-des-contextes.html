@@ -1,0 +1,133 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Exemples &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>De manière très grossière, on peut voir le contexte d’une vue comme un dictionnaire python contenant les données nécessaires au rendu.</p>
+<p>En réalité, il s’agit d’un objet un peu plus complexe qui se trouve dans le module <code class="docutils literal notranslate"><span class="pre">django.template</span></code> et qui s’appelle évidemment… <code class="docutils literal notranslate"><span class="pre">Context</span></code> !</p>
+<p><code class="docutils literal notranslate"><span class="pre">Context</span></code> est un objet qui prend éventuellement en entrée un dictionnaire. Une fois créé, on peut le manipuler comme on le ferait avec un dictionnaire.</p>
+<div class="section" id="exemples">
+<span id="exemples"></span><h1>Exemples<a class="headerlink" href="#exemples" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">Context</span>
+
+
+<span class="n">my_context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">({</span><span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">})</span>
+<span class="n">my_context</span><span class="p">[</span><span class="s1">&#39;foo&#39;</span><span class="p">]</span>  <span class="c1"># &#39;bar&#39;</span>
+<span class="k">del</span> <span class="n">my_context</span><span class="p">[</span><span class="s1">&#39;foo&#39;</span><span class="p">]</span>
+<span class="n">my_context</span><span class="p">[</span><span class="s1">&#39;foo&#39;</span><span class="p">]</span>  <span class="c1"># raise Error</span>
+<span class="n">my_context</span><span class="p">[</span><span class="s1">&#39;baz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;zab&#39;</span>
+<span class="n">my_context</span>  <span class="c1"># {&#39;baz&#39;: &#39;zab&#39;}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<span id="usage"></span><h1>Usage<a class="headerlink" href="#usage" title="Lien permanent vers ce titre">¶</a></h1>
+<p>A partir d’un template, on peut associer autant de contexte que l’on veut pour générer tout autant de pages.
+Un même contexte peut également être utilisé pour différent template mais cela a moins de sens dans les cas pratiques.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">Context</span><span class="p">,</span> <span class="n">Template</span>
+
+
+<span class="n">template1</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s1">&#39;My name is {{ name }}.&#39;</span><span class="p">)</span>
+<span class="n">template2</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s1">&#39;Greetings {{ name }}.&#39;</span><span class="p">)</span>
+<span class="n">template3</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s1">&#39;Spelling: {</span><span class="si">% f</span><span class="s1">or letter in name.lower %}{{ letter }}{</span><span class="si">% i</span><span class="s1">f not forloop.last %}-{</span><span class="si">% e</span><span class="s1">ndif %}{</span><span class="si">% e</span><span class="s1">ndfor %}&#39;</span><span class="p">)</span>
+
+<span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Max&#39;</span><span class="p">})</span>
+
+<span class="n">template1</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>  <span class="c1"># &#39;My name is Max.&#39;</span>
+<span class="n">template3</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>  <span class="c1"># &#39;Spelling: m-a-x&#39;</span>
+
+<span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Maaax&#39;</span><span class="p">})</span>
+<span class="n">template2</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>  <span class="c1"># &#39;Greetings Maaax.&#39;</span>
+
+<span class="n">context2</span> <span class="o">=</span> <span class="n">Context</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;superLongNameToSpell&#39;</span><span class="p">})</span>
+<span class="n">template3</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context2</span><span class="p">)</span>  <span class="c1"># &#39;Spelling: s-u-p-e-r-l-o-n-g-n-a-m-e-t-o-s-p-e-l-l&#39;</span>
+
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Exemples</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Gestion-des-contextes.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Gestion-des-contextes.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

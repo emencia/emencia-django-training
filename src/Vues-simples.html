@@ -1,0 +1,151 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Vues simples ou fonctionnelles &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vues-simples-ou-fonctionnelles">
+<span id="vues-simples-ou-fonctionnelles"></span><h1>Vues simples ou fonctionnelles<a class="headerlink" href="#vues-simples-ou-fonctionnelles" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Il existe plusieurs façons d’implémenter les views en Django, commençons par la plus simple.</p>
+<p>Une vue <strong>est une fonction</strong> qui <strong>prend en entrée une requête</strong> et <strong>retourne une réponse</strong>. Rien de plus.</p>
+<p>Nous allons commencer par aborder une vue minimum, très simpliste.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s1">&#39;&lt;html&gt;Hello world&lt;/html&gt;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Cette vue nous retournera le contenu html suivant : <code class="docutils literal notranslate"><span class="pre">&lt;html&gt;Hello</span> <span class="pre">world&lt;/html&gt;</span></code></p>
+</div>
+<div class="section" id="details-des-classes-httprequest-httpresponse-querydict">
+<span id="details-des-classes-httprequest-httpresponse-querydict"></span><h1>Détails des classes HttpRequest, HttpResponse &amp; QueryDict<a class="headerlink" href="#details-des-classes-httprequest-httpresponse-querydict" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="section" id="httprequest">
+<span id="httprequest"></span><h2>HttpRequest<a class="headerlink" href="#httprequest" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Dans l’exemple précédent, l’objet <code class="docutils literal notranslate"><span class="pre">request</span></code> utilisé en entrée correspond à une requête au sens classique du web, il peut s’agir d’une méthode «&nbsp;get&nbsp;», «&nbsp;post&nbsp;», «&nbsp;delete&nbsp;», etc…</p>
+<p>Une requête peut contenir des données (les données d’un formulaires par exemple) et possède de nombreuses informations : le host, l’utilisateur, la session, l’url, etc…</p>
+<p>Toutes ces données peuvent être exploitées au sein de la vue. Exemple très courant : vérifier l’identité d’un utilisateur.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">Http404</span>
+
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">Http404</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s1">&#39;&lt;html&gt;Hello world&lt;/html&gt;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>L’objet Django utilisé pour représenter une requête est <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/request-response/#django.http.HttpRequest"><code class="docutils literal notranslate"><span class="pre">HttpRequest</span></code></a>.</p>
+</div>
+<div class="section" id="httpresponse">
+<span id="httpresponse"></span><h2>HttpResponse<a class="headerlink" href="#httpresponse" title="Lien permanent vers ce titre">¶</a></h2>
+<p>De la même façon qu’une requête, une réponse contient plusieurs informations, un statut, un contenu, le type de donnée renvoyé (ici du texte html), un encodage etc…</p>
+<ul class="simple">
+<li>Par défaut le code de réponse est 200 (vous connaissez sûrement le code 404 pour une page non trouvée, 500 en cas d’erreur etc…)</li>
+<li>Le type de contenu renvoyé est «&nbsp;text/html&nbsp;»</li>
+<li>L’encodage utilisé par défaut est «&nbsp;utf-8&nbsp;»</li>
+</ul>
+<p>L’objet Django correspondant que nous avons explicitement utilisé est <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/request-response/#httpresponse-objects"><code class="docutils literal notranslate"><span class="pre">HttpResponse</span></code></a>.</p>
+<p>Si l’objet requête est construit et fourni par Django, il appartient aux vues (et donc à la personne qui les implémente) de retourner un objet <code class="docutils literal notranslate"><span class="pre">HttpResponse</span></code> qui soit correct.</p>
+</div>
+<div class="section" id="querydict">
+<span id="querydict"></span><h2>QueryDict<a class="headerlink" href="#querydict" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Il est courant dans les url d’observer le schéma suivant : <code class="docutils literal notranslate"><span class="pre">example.com?data1=foo&amp;data2=bar</span></code> (une recherche google contient en général beaucoup d’information dans son URL).</p>
+<p>Ces informations, au même titre que des données de formulaires sont accessibles au sein de la requête (via <code class="docutils literal notranslate"><span class="pre">request.GET</span></code> et <code class="docutils literal notranslate"><span class="pre">request.POST</span></code>) et sont stockées dans des objets relativement similaires aux dictionnaires python appelés <code class="docutils literal notranslate"><span class="pre">QueryDict</span></code>. Ils sont immuables mais nous permettent d’accéder aux données envoyées par le client.</p>
+</div>
+</div>
+<div class="section" id="conclusion">
+<span id="conclusion"></span><h1>Conclusion<a class="headerlink" href="#conclusion" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Nous avons vu comment créer notre première page html, voyons comment la connecter à l’application et lui assigner une URL.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Vues simples ou fonctionnelles</a></li>
+<li><a class="reference internal" href="#details-des-classes-httprequest-httpresponse-querydict">Détails des classes HttpRequest, HttpResponse &amp; QueryDict</a><ul>
+<li><a class="reference internal" href="#httprequest">HttpRequest</a></li>
+<li><a class="reference internal" href="#httpresponse">HttpResponse</a></li>
+<li><a class="reference internal" href="#querydict">QueryDict</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Vues-simples.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Vues-simples.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

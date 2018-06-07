@@ -1,0 +1,129 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>&lt;no title&gt; &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Pour internationaliser une application, Django propose l’internationalisation (i18n) depuis les settings. Par défaut, l’internationalisation est activée, on peut le désactiver via <code class="docutils literal notranslate"><span class="pre">USE_I18N</span> <span class="pre">=</span> <span class="pre">False</span></code>.</p>
+<p>En éditant <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>, on peut modifier les langues disponibles via <code class="docutils literal notranslate"><span class="pre">LANGUAGES</span></code> et la langue par défaut avec <code class="docutils literal notranslate"><span class="pre">LANGUAGE_CODE</span></code> :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+
+
+<span class="n">LANGUAGES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="c1"># (&quot;en-au&quot;, gettext(u&quot;Australia&quot;)),</span>
+    <span class="c1"># (&quot;de&quot;, gettext(u&quot;Deutschland&quot;)),</span>
+    <span class="c1"># (&quot;es&quot;, gettext(u&quot;España&quot;)),</span>
+    <span class="p">(</span><span class="s2">&quot;fr&quot;</span><span class="p">,</span> <span class="n">gettext</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;France&quot;</span><span class="p">)),</span>
+    <span class="c1"># (&quot;zh-hk&quot;, gettext(u&quot;Hong Kong&quot;)),</span>
+    <span class="c1"># (&quot;it&quot;, gettext(u&quot;Italia&quot;)),</span>
+    <span class="c1"># (&quot;nl&quot;, gettext(u&quot;Nederland&quot;)),</span>
+    <span class="c1"># (&quot;pl&quot;, gettext(u&quot;Polska&quot;)),</span>
+    <span class="c1"># (&quot;ru&quot;, gettext(u&quot;Россия&quot;)),</span>
+    <span class="c1"># (&quot;en-gb&quot;, gettext(u&quot;United Kingdom&quot;)),</span>
+    <span class="c1"># (&quot;en&quot;, gettext(u&quot;USA&quot;)),</span>
+    <span class="c1"># (&quot;ja&quot;, gettext(u&quot;日本&quot;)),</span>
+    <span class="c1"># (&#39;zh-cn&#39;, gettext(u&#39;中国&#39;)),</span>
+    <span class="c1"># (&quot;ko-kr&quot;, gettext(u&quot;한국&quot;)),</span>
+<span class="p">)</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Sur cet exemple, uniquement la langue française (FR) est activée. Pour en activer une autre, il suffit de retirer le caractère # en début de ligne (décommenter la ligne).</p>
+<p>Exemple, si je veux activer FR, EN et ES :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LANGUAGES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="c1"># (&quot;en-au&quot;, gettext(u&quot;Australia&quot;)),</span>
+    <span class="c1"># (&quot;de&quot;, gettext(u&quot;Deutschland&quot;)),</span>
+    <span class="p">(</span><span class="s2">&quot;es&quot;</span><span class="p">,</span> <span class="n">gettext</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;España&quot;</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s2">&quot;fr&quot;</span><span class="p">,</span> <span class="n">gettext</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;France&quot;</span><span class="p">)),</span>
+    <span class="c1"># (&quot;zh-hk&quot;, gettext(u&quot;Hong Kong&quot;)),</span>
+    <span class="c1"># (&quot;it&quot;, gettext(u&quot;Italia&quot;)),</span>
+    <span class="c1"># (&quot;nl&quot;, gettext(u&quot;Nederland&quot;)),</span>
+    <span class="c1"># (&quot;pl&quot;, gettext(u&quot;Polska&quot;)),</span>
+    <span class="c1"># (&quot;ru&quot;, gettext(u&quot;Россия&quot;)),</span>
+    <span class="c1"># (&quot;en-gb&quot;, gettext(u&quot;United Kingdom&quot;)),</span>
+    <span class="p">(</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">gettext</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;USA&quot;</span><span class="p">)),</span>
+    <span class="c1"># (&quot;ja&quot;, gettext(u&quot;日本&quot;)),</span>
+    <span class="c1"># (&#39;zh-cn&#39;, gettext(u&#39;中国&#39;)),</span>
+    <span class="c1"># (&quot;ko-kr&quot;, gettext(u&quot;한국&quot;)),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Internationaliser-une-application.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Internationaliser-une-application.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

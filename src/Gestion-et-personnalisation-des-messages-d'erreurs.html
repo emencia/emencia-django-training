@@ -1,0 +1,160 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Un contrôle plus fin des erreurs dans les templates &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Nous avons déjà vu comment ajouter nos propres messages d’erreur reste à savoir comment contrôler leur affichage.</p>
+<div class="section" id="un-controle-plus-fin-des-erreurs-dans-les-templates">
+<span id="un-controle-plus-fin-des-erreurs-dans-les-templates"></span><h1>Un contrôle plus fin des erreurs dans les templates<a class="headerlink" href="#un-controle-plus-fin-des-erreurs-dans-les-templates" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Les formulaires possède deux attributs pour une première customisation facile. En effet, on peut préciser les classes css à ajouter en cas d’erreur ou en cas de champs obligatoires :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+
+<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">error_css_class</span> <span class="o">=</span> <span class="s1">&#39;error&#39;</span>
+    <span class="n">required_css_class</span> <span class="o">=</span> <span class="s1">&#39;required&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="les-templates-a-la-main">
+<span id="les-templates-a-la-main"></span><h1>Les templates… à la main<a class="headerlink" href="#les-templates-a-la-main" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Il est possible d’itérer sur les champs pour plus de flexibilité mais cela a un prix.
+On peut décider de remplacer <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">form.as_p</span> <span class="pre">}}</span></code> par :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{{ form.non_field_errors }}
+{% for field in form %}
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;fieldWrapper&quot;</span><span class="p">&gt;</span>
+        {{ field.errors }}
+        <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;{{ field.id_for_label }}&quot;</span><span class="p">&gt;</span>{{ field.label }}<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span> {{ field }}
+        {% if field.help_text %}
+        <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;help&quot;</span><span class="p">&gt;</span>{{ field.help_text|safe }}<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+        {% endif %}
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+{% endfor %}
+</pre></div>
+</div>
+<p>Le label peut être simplifié en utilisant {{ field.label_tag }} ce qui donnerait pour l’intérieur de la boucle :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;fieldWrapper&quot;</span><span class="p">&gt;</span>
+    {{ field.errors }}
+    {{ field.label_tag }}
+    {{ field }}
+    {% if field.help_text %}
+        <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;help&quot;</span><span class="p">&gt;</span>{{ field.help_text|safe }}<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    {% endif %}
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="personnaliser-le-rendu-des-erreurs">
+<span id="personnaliser-le-rendu-des-erreurs"></span><h1>Personnaliser le rendu des erreurs<a class="headerlink" href="#personnaliser-le-rendu-des-erreurs" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Il est possible d’aller plus loin dans la personnalisation des erreurs. On peur redéfinir la manière d’afficher la liste des erreurs.</p>
+<p>Nous pouvons modifier le template utilisé plus haut et itérer sur <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">field.errors</span> <span class="pre">}}</span></code> ou nous pouvons définir un enfant de <code class="docutils literal notranslate"><span class="pre">django.forms.utils.ErrorList</span></code> pour pouvoir le réutiliser plus facilement.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.forms.utils</span> <span class="kn">import</span> <span class="n">ErrorList</span>
+
+<span class="k">class</span> <span class="nc">DivErrorList</span><span class="p">(</span><span class="n">ErrorList</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_div</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">as_div</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;div class=&quot;errorlist&quot;&gt;{}&lt;/div&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;&lt;div class=&quot;error&quot;&gt;{}&lt;/div&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+        <span class="p">)</span>
+
+<span class="o">...</span>
+<span class="n">my_form</span> <span class="o">=</span> <span class="n">MyForm</span><span class="p">(</span><span class="n">error_class</span><span class="o">=</span><span class="n">DivErrorList</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="personnaliser-le-rendu">
+<span id="personnaliser-le-rendu"></span><h1>Personnaliser le rendu<a class="headerlink" href="#personnaliser-le-rendu" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Il est possible d’aller encore plus loin et de redéfinir la manière dont les formulaires et les champs sont générés et également de proposer des templates pour chaque widgets.</p>
+<p>Allez plus loin avec <a class="reference external" href="https://docs.djangoproject.com/fr/1.11/ref/forms/renderers/#the-low-level-render-api">la documentation officielle</a>.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Un contrôle plus fin des erreurs dans les templates</a></li>
+<li><a class="reference internal" href="#les-templates-a-la-main">Les templates… à la main</a></li>
+<li><a class="reference internal" href="#personnaliser-le-rendu-des-erreurs">Personnaliser le rendu des erreurs</a></li>
+<li><a class="reference internal" href="#personnaliser-le-rendu">Personnaliser le rendu</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Gestion-et-personnalisation-des-messages-d&#39;erreurs.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Gestion-et-personnalisation-des-messages-d&#39;erreurs.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

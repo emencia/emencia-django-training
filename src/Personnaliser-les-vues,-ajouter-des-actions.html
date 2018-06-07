@@ -1,0 +1,153 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Actions d’administration &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Il est possible d’ajouter de nouvelles pages à l’interface d’administration (URLs et views personnalisés), et également de changer tous les templates.</p>
+<p>Il existe des applications tierces qui s’occupent d’ailleurs de modifier complètement l’apparence de l’admin (ex : <a class="reference external" href="http://jet.geex-arts.com/">django-jet</a>).</p>
+<p>Nous allons supposer ici que l’interface vous convient dans un premier temps mais que vous voulez pouvoir ajouter  quelques fonctionnalités. En effet, l’administration de Django suppose que l’on va suivre la logique suivante :</p>
+<ul class="simple">
+<li>Sélectionner une application, un modèle, une instance</li>
+<li>Mettre à jour / supprimer ou ajouter une autre instance</li>
+</ul>
+<p>Que se passe-t-il si nous voulons modifier plusieurs objets d’un coup ? Appliquer une action sur ces objets ? Envoyez un mail en fonction de X objets ? Exportez les données sélectionnées vers un fichier excel ?</p>
+<p>Laissez moi vous présenter….. les actions d’administration !</p>
+<div class="section" id="actions-d-administration">
+<span id="actions-d-administration"></span><h1>Actions d’administration<a class="headerlink" href="#actions-d-administration" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Par défaut, il existe une action pour supprimer plusieurs éléments d’un coup. Dans les vues en liste de vos modèles, vous pouvez sélectionner une ou plusieurs instance et appliquer l’action de votre choix.</p>
+<p><img alt="Capture d'écran avec l'action par défaut" src="https://docs.google.com/drawings/d/e/2PACX-1vT8iZg3SITkZ2GUd3-pQQfSq_vjuSU167-QEMb7SJd3wPXvhRx4M85vWJw9eLUrefM6uBYVnz3W7D7p/pub?w=921&amp;h=305" /></p>
+<p>Vous pouvez ajouter une action de la manière suivante :</p>
+<p><code class="docutils literal notranslate"><span class="pre">models.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">is_hidden</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+   
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">admin.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">myapp.models</span> <span class="kn">import</span> <span class="n">MyModel</span>
+
+<span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="n">modeladmin</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
+    <span class="n">queryset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">is_hidden</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">hide</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s2">&quot;Hide selected models&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">MyModelAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;hidden&#39;</span><span class="p">]</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="p">[</span><span class="n">hide</span><span class="p">]</span>
+
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">MyModelAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Il est également possible d’ajouter/supprimer une action pour l’ensemble du site et des modèles accessibles dans l’admin.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">add_action</span><span class="p">(</span><span class="n">hide</span><span class="p">,</span> <span class="s1">&#39;hide_selected&#39;</span><span class="p">)</span>  <span class="c1"># Le deuxième argument est un nom optionnel qui peut permettre une suppression plus aisée</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">disable_action</span><span class="p">(</span><span class="s1">&#39;hide_selected&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="raffinement-de-l-interface">
+<span id="raffinement-de-l-interface"></span><h1>Raffinement de l’interface<a class="headerlink" href="#raffinement-de-l-interface" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Avec l’aide de la classe <code class="docutils literal notranslate"><span class="pre">ModelAdmin</span></code>, il est possible d’aller plus loin et d’ajouter des filtres rapides, des champs de recherches, afficher plus d’informations, rendre des champs éditables directement depuis la vue en liste etc…</p>
+<p>Pour de plus amples informations sur la personnalisation de l’admin, se refférer à <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/admin/">la documentation officielle</a>.</p>
+</div>
+<div class="section" id="documentation">
+<span id="documentation"></span><h1>Documentation<a class="headerlink" href="#documentation" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Il est possible de rendre accessible l’ensemble de la documentation du code du site accessible via <code class="docutils literal notranslate"><span class="pre">admindoc</span></code>.
+Voir la <a class="reference external" href="https://docs.djangoproject.com/fr/1.11/ref/contrib/admin/admindocs/">documentation officielle</a>.</p>
+<p>Cette approche peut être intéressante pour fournir en un espace commun l’ensemble des fonctionnalités intéressantes pour un administrateur. Il peut cependant être opportun de fournir une documentation séparée, disponible à une autre adresse avec des services comme <a class="reference external" href="https://readthedocs.org/">Read The Docs</a> et/ou <a class="reference external" href="http://www.sphinx-doc.org/en/stable/">sphinx</a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Actions d’administration</a></li>
+<li><a class="reference internal" href="#raffinement-de-l-interface">Raffinement de l’interface</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Personnaliser-les-vues,-ajouter-des-actions.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Personnaliser-les-vues,-ajouter-des-actions.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

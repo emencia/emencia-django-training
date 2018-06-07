@@ -1,0 +1,141 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Configuration &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Les fichiers statiques désignent en général les fichiers .css, .js, les images, vidéos etc… Pour gérer ces fichiers, Django fournit <code class="docutils literal notranslate"><span class="pre">django.contrib.staticfiles</span></code> pour gérer ce problème.</p>
+<div class="section" id="configuration">
+<span id="configuration"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Lien permanent vers ce titre">¶</a></h1>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">django.contrib.staticfiles</span></code> doit être inclus dans <code class="docutils literal notranslate"><span class="pre">settings.INSTALLED_APPS</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">settings.STATIC_URL</span></code> doit être défini. Exemple : <code class="docutils literal notranslate"><span class="pre">STATIC_URL</span> <span class="pre">=</span> <span class="pre">'/static/'</span></code></li>
+<li>Dans vos fichiers de templates, vous pouvez utiliser le templatetag <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">static</span> <span class="pre">'mon_fichier.extension'</span> <span class="pre">%}</span></code> pour construire l’URL selon votre backend de stockage de fichier. (NB: il faudra également ajouter <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">load</span> <span class="pre">static</span> <span class="pre">%}</span></code>)</li>
+<li>En général, par convention, on stoque les fichiers statiques dans un dossier nommé <code class="docutils literal notranslate"><span class="pre">static</span></code> au sein de chaque application. Exemple : <code class="docutils literal notranslate"><span class="pre">my_app/static/my_app/logo.jpg</span></code>.</li>
+</ul>
+</div>
+<div class="section" id="servir-les-fichiers-statiques">
+<span id="servir-les-fichiers-statiques"></span><h1>Servir les fichiers statiques<a class="headerlink" href="#servir-les-fichiers-statiques" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Si la configuration ci-dessus permet de gérer les URLs et facilite la collecte des fichiers, il faut également assurer comment Django (ou un autre service) va servir les fichiers.</p>
+<p>En développement, avec <code class="docutils literal notranslate"><span class="pre">django.contrib.staticfiles</span></code>, les fichiers statiques sont automatiquement servis quand on utilise la commande <code class="docutils literal notranslate"><span class="pre">runserver</span></code> et avec <code class="docutils literal notranslate"><span class="pre">settings.DEBUG</span> <span class="pre">=</span> <span class="pre">True</span></code>. Cette méthode est efficace mais n’est absolument pas adapté en production. Il est recommandé de servir les fichiers avec un autre service (ex: via Nginx). Pour plus d’informations, voir <a class="reference external" href="https://docs.djangoproject.com/fr/1.11/howto/static-files/deployment/">la documentation officielle</a></p>
+<p>Par ailleurs, tous les fichiers ne seront pas systématiquement lié à une application. Pour cette raison, on peut définir une liste de répertoire (via <code class="docutils literal notranslate"><span class="pre">settings.STATICFILES_DIRS</span></code>) où Django trouvera les fichiers statiques.</p>
+<p>Exemple :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">STATICFILES_DIRS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s2">&quot;static&quot;</span><span class="p">),</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s2">&quot;node_modules&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>(Pour plus d’informations, voir <a class="reference external" href="https://docs.djangoproject.com/fr/1.11/ref/settings/#std:setting-STATICFILES_FINDERS">la documentation officielle de STATICFILES_DIR</a>)</p>
+<div class="section" id="nommage">
+<span id="nommage"></span><h2>Nommage<a class="headerlink" href="#nommage" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Il est recommandé de placer les fichiers dans le dossier <code class="docutils literal notranslate"><span class="pre">static/my_app/</span></code> d’une application  (ex: <code class="docutils literal notranslate"><span class="pre">my_app/static/my_app/my_file.jpeg</span></code>) plutôt que directement <code class="docutils literal notranslate"><span class="pre">static/</span></code></p>
+<p>En effet, lors de la collecte de tous les fichiers statiques, il pourrait y avoir certains fichiers qui viennent en écraser d’autres car ils ont le même nom, utiliser un espace de nom permet d’éviter ces conflits.</p>
+</div>
+<div class="section" id="tests">
+<span id="tests"></span><h2>Tests<a class="headerlink" href="#tests" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Si vous avez besoin d’utiliser des tests qui nécessitent des fichiers statiques, sans avoir à vous soucier de leur collecte préalable, Django fournit la classe <code class="docutils literal notranslate"><span class="pre">StaticLiveServerTestCase</span></code> qui possède une fonctionnalité très basique pour servir les fichiers. En effet, LiveServerTestCase suppose que le dossier (<code class="docutils literal notranslate"><span class="pre">STATIC_ROOT</span></code>) avec les fichiers statiques est à jour (c’est à dire déjà collecté) et ne servira que ces fichiers là.</p>
+</div>
+<div class="section" id="effectuer-une-collecte">
+<span id="effectuer-une-collecte"></span><h2>Effectuer une collecte<a class="headerlink" href="#effectuer-une-collecte" title="Lien permanent vers ce titre">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">django.contrib.staticfiles</span></code> ajoute une commande pour collecter les fichiers statiques dans un seul répertoire pour pouvoir plus facilement les servir.</p>
+<p>###b Configuration :</p>
+<ul class="simple">
+<li>Définissez <code class="docutils literal notranslate"><span class="pre">settings.STATIC_ROOT</span></code> comme le répertoire à partir duquel vous souhaitez servir les fichiers.
+Exemple : <code class="docutils literal notranslate"><span class="pre">STATIC_ROOT</span> <span class="pre">=</span> <span class="pre">&quot;/var/www/my_site.com/static/&quot;</span></code></li>
+<li>Lancez la commande django <code class="docutils literal notranslate"><span class="pre">collectstatic</span></code> : <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">collectstatic</span></code>
+Cela copie tous les fichiers de vos dossiers de fichiers statiques vers le répertoire <code class="docutils literal notranslate"><span class="pre">STATIC_ROOT</span></code>.</li>
+</ul>
+<p>A partir de là, le serveur Web de votre choix (nginx par exemple) peut servir les fichiers à partir de ce dossier.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration</a></li>
+<li><a class="reference internal" href="#servir-les-fichiers-statiques">Servir les fichiers statiques</a><ul>
+<li><a class="reference internal" href="#nommage">Nommage</a></li>
+<li><a class="reference internal" href="#tests">Tests</a></li>
+<li><a class="reference internal" href="#effectuer-une-collecte">Effectuer une collecte</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Gestion-des-fichiers-statiques.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Gestion-des-fichiers-statiques.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

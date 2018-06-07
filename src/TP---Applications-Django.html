@@ -1,0 +1,329 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Minute papillon ! Où sont les tests ? &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Lors du <a class="reference external" href="https://github.com/emencia/emencia-django-training/wiki/TP---Introduction">premier TP</a>, nous avons initialisé notre projet.</p>
+<p>Pour rappel, la page d’accueil du site nous indiquait:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Next, start your first app by running python manage.py startapp [app_label].
+
+You&#39;re seeing this message because you have DEBUG = True in your Django settings file and you haven&#39;t configured any URLs. Get to work!
+</pre></div>
+</div>
+<p>Nous allons pouvoir créer notre première application !</p>
+<div class="section" id="minute-papillon-ou-sont-les-tests">
+<span id="minute-papillon-ou-sont-les-tests"></span><h1>Minute papillon ! Où sont les tests ?<a class="headerlink" href="#minute-papillon-ou-sont-les-tests" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Mais pour ne pas aller trop vite en besogne, nous allons commencer par ajouter des tests. Pourquoi donc ? Notre application est vide ! Et elle marche !</p>
+<p>Dans ce cas, cela devrait être rapide, n’est-ce pas ? Pourquoi se priver de moyens automatisés qui vérifie le bon état de notre application ? De plus, nous n’avons pas de moyen de vérifier que l’application marche sans la voir, cela reste quelque peu fastidieux… En prenant l’excuse de la découverte, nous nous sommes permis de commencer notre projet et d’éditer quelques fichiers sans avoir écrit un seul test, c’est une faute grave. A partir de maintenant, nous allons nous assurer au maximum de ne plus ajouter de code sans tests.</p>
+<p>On peut distinguer dans un premier temps deux types de tests, les tests <em>unitaires</em> et les tests <em>fonctionnels</em>.</p>
+<ul class="simple">
+<li>Un test unitaire vérifie une fonction/méthode, parfois même une simple ligne de code de manière très précise et succincte : on teste la plus petite unité de code possible, en isolation du reste du projet/module.</li>
+</ul>
+<p><em>Exemple : Quand j’appelle la fonction <code class="docutils literal notranslate"><span class="pre">add_integer</span></code> avec les argument <code class="docutils literal notranslate"><span class="pre">1</span></code> et <code class="docutils literal notranslate"><span class="pre">2</span></code>, le résultat est <code class="docutils literal notranslate"><span class="pre">3</span></code>. Avec les argument <code class="docutils literal notranslate"><span class="pre">None</span></code> et <code class="docutils literal notranslate"><span class="pre">'foo'</span></code> , une exception est levée.</em></p>
+<ul class="simple">
+<li>Un test fonctionnel, à l’inverse, teste le projet ou l’application de manière plus globale. Un test fonctionnel ressemble plus au parcours d’un réel utilisateur sur le site.</li>
+</ul>
+<p><em>Exemple: Chloé se connecte sur notre site via l’url www.foo.bar et la page d’accueil est affichée. Le titre doit alors être “Bienvenue”. Le test fonctionnel va reprendre ce parcours, l’effectuer et vérifier son bon fonctionnement.</em></p>
+<p>En utilisant correctement ces deux types de test, nous pouvons nous assurer de couvrir une grande majorité des problèmes que nous pouvons rencontrer.</p>
+<p>Nous allons ajouter un répertoire <code class="docutils literal notranslate"><span class="pre">tests</span></code> dans <code class="docutils literal notranslate"><span class="pre">todoz</span></code> pour accueillir les tests. N’oublions pas le fichier <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> et ajoutons un fichier <code class="docutils literal notranslate"><span class="pre">tests_functionnal.py</span></code> et <code class="docutils literal notranslate"><span class="pre">tests.py</span></code></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> todoz
+mkdir tests
+<span class="nb">cd</span> tests
+touch __init__.py
+touch tests_functionnal.py
+touch tests.py
+</pre></div>
+</div>
+<p>En se replaçant à la racine du projet, la commande <code class="docutils literal notranslate"><span class="pre">tree</span></code> devrait donner :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+├── db.sqlite3
+├── manage.py
+└── todoz
+    ├── __init__.py
+    ├── settings.py
+    ├── tests
+    │   ├── __init__.py
+    │   ├── tests_functionnal.py
+    │   └── tests.py
+    ├── urls.py
+    └── wsgi.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="premier-test-fonctionnel">
+<span id="premier-test-fonctionnel"></span><h1>Premier test fonctionnel<a class="headerlink" href="#premier-test-fonctionnel" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Écrivons notre premier test fonctionnel ! Pour cela, nous allons lancer un navigateur Firefox via les tests. Pour ce faire, nous avons besoin d’une nouvelle bibliothèque : <a class="reference external" href="http://selenium-python.readthedocs.io/"><code class="docutils literal notranslate"><span class="pre">selenium</span></code></a>.</p>
+<p>Éditons le fichier <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> et ajoutons <code class="docutils literal notranslate"><span class="pre">selenium</span></code>. Utilisons ensuite la commande <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code></p>
+<p><em>requirements.txt</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Django</span><span class="o">&gt;=</span><span class="mf">1.11</span>
+<span class="n">selenium</span>
+</pre></div>
+</div>
+<p>En cas de problème avec Selenium, vous pouvez trouver une aide succincte <a class="reference external" href="https://github.com/emencia/emencia-django-training/wiki/Probl%C3%A8mes-avec-selenium-et-geckodriver">ici</a>.</p>
+<p>Notre premier test sera juste de vérifier que l’on arrive bien à se connecter à notre serveur et qu’il affiche la page telle que l’on s’en souvient. («&nbsp;It worked…&nbsp;»)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">selenium</span> <span class="kn">import</span> <span class="n">webdriver</span>
+
+<span class="n">browser</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Firefox</span><span class="p">()</span>
+<span class="c1"># Chloé se connecte à notre site</span>
+<span class="n">browser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://localhost:8000&#39;</span><span class="p">)</span>
+
+<span class="c1"># Chloé aperçoit &#39;Django&#39; dans le titre de la page</span>
+<span class="k">assert</span> <span class="s1">&#39;Django&#39;</span> <span class="ow">in</span> <span class="n">browser</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="s2">&quot;Le titre est {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">browser</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Vous pouvez exécuter ce fichier avec <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">todoz/tests/tests_functional.py</span></code> et observer une erreur dans votre console. En effet, on suppose ici que le serveur est en train de tourner sur le port 8000 de notre machine mais nous ne l’avons pourtant pas lancé !</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">runserver</span></code> et nous devrions avoir un serveur opérationnel qui tourne sur le port 8000.
+En lançant à nouveau notre fichier de test, nous devrions obtenir cette fois un succès !</p>
+<p>A ce stade, nous pouvons avoir plusieurs remarques :</p>
+<ol class="simple">
+<li>Un navigateur est lancé à chaque fois (ce qui peut devenir un peu lent mais garde certains avantages) et ne se ferme pas en cas d’erreur</li>
+<li>Nous sommes obligé de lancer le serveur à la main</li>
+<li>Nous n’utilisons pas la commande django pour les tests (??)</li>
+<li>Le test semble «&nbsp;idiot&nbsp;»</li>
+</ol>
+<p>Les tests cachent rarement une complexité hors norme et il vaut mieux de nombreux tests simplistes, qui soient facilement compréhensible et maintenable. Le point 4 peut être écarté.</p>
+<p>A ce stage, nous n’avons pas d’url qui soit définie au sein de notre application. Nous utiliserons très prochainement les classes de tests de Django pour réaliser nos tests.</p>
+<p>Par ailleurs, il est également possible de tester notre application avec des tests fonctionnelles sans lancer un navigateur graphiquement et vérifier si nous utilisons le bon template, si le code de statut est le bon etc… Mais nous n’avons pas encore  vu tous ces points. Patience !</p>
+<p>Nous allons tout de même essayer d’utiliser un code qui soit plus proche des tests Django. Nous allons commencer par organiser notre test avec une classe que nous allons hériter de <code class="docutils literal notranslate"><span class="pre">unittest.TestCase</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">selenium</span> <span class="kn">import</span> <span class="n">webdriver</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+
+<span class="k">class</span> <span class="nc">NewVisitorTest</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This method is called before each test</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">browser</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Firefox</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This method is called after each test</span>
+<span class="sd">        We ensure we close the browser</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">browser</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">test_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This is our actual test !</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Chloe heard about an awesome new website</span>
+        <span class="c1"># and wants to check it out</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">browser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://localhost:8000&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Chloe has a sharp eye and notice the title !</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;Django&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">browser</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Nous pouvons maintenant lancer la commande de test django avec <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">test</span></code> et nous devrions avoir une résultat similaire au suivant :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Creating</span> <span class="n">test</span> <span class="n">database</span> <span class="k">for</span> <span class="n">alias</span> <span class="s1">&#39;default&#39;</span><span class="o">...</span>
+<span class="n">System</span> <span class="n">check</span> <span class="n">identified</span> <span class="n">no</span> <span class="n">issues</span> <span class="p">(</span><span class="mi">0</span> <span class="n">silenced</span><span class="p">)</span><span class="o">.</span>
+<span class="o">.</span>
+<span class="o">----------------------------------------------------------------------</span>
+<span class="n">Ran</span> <span class="mi">1</span> <span class="n">test</span> <span class="ow">in</span> <span class="mf">3.727</span><span class="n">s</span>
+
+<span class="n">OK</span>
+<span class="n">Destroying</span> <span class="n">test</span> <span class="n">database</span> <span class="k">for</span> <span class="n">alias</span> <span class="s1">&#39;default&#39;</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>Excellent ! Cependant, notre url est toujours «&nbsp;en dure&nbsp;» dans le test et nous avons toujours besoin de lancer le serveur à la main.</p>
+<p>Nous pouvons noter au passage que nous utilisons <code class="docutils literal notranslate"><span class="pre">self.assertIn</span></code> qui permet d’être plus concis et verbeux sur le retour d’erreur qu’un simple <code class="docutils literal notranslate"><span class="pre">assert</span></code>. Django et unittest ici propose de nombreuses méthodes similaires : <code class="docutils literal notranslate"><span class="pre">assertContains</span></code>, “assertRedirects` etc…</p>
+<p>A ce stade, il est opportun d’ajouter quelque chose au niveau du <code class="docutils literal notranslate"><span class="pre">setUp</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">browser</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Firefox</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">browser</span><span class="o">.</span><span class="n">implicitly_wait</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>C’est assez standard avec <code class="docutils literal notranslate"><span class="pre">selenium</span></code> de préciser un temps implicite pendant lequel <code class="docutils literal notranslate"><span class="pre">selenium</span></code> «&nbsp;attends&nbsp;» que la page charge correctement. Cela devient particulièrement important quand nous essaierons de localiser des éléments sur la page.</p>
+<p>Avec ce premier test en place, nous allons pouvoir passer aux choses sérieuses. Nous voulons maintenant ajouter notre application (enfin!) et afficher notre première page !</p>
+<p>Première chose à faire ? Écrire des tests. Ne jetez pas l’éponge tout de suite, quand vous aurez adopté les tests, nous ne pourrez plus vous en passer.</p>
+<p>Nous allons commencer par vérifier que notre nouvelle application est bien installée. Nous allons pour cela écrire un test unitaire (dans le fichier <code class="docutils literal notranslate"><span class="pre">tests.py</span></code>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">SimpleTestCase</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+
+<span class="k">class</span> <span class="nc">TestInstalledApps</span><span class="p">(</span><span class="n">SimpleTestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_installed_apps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">apps</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">INSTALLED_APPS</span>
+        <span class="k">assert</span> <span class="s1">&#39;tasks&#39;</span> <span class="ow">in</span> <span class="n">apps</span><span class="p">,</span> \
+            <span class="s1">&#39;Les applications installées sont {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39; ,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">apps</span><span class="p">))</span>
+
+</pre></div>
+</div>
+<p>En lançant les test, vous devriez obtenir :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Creating</span> <span class="n">test</span> <span class="n">database</span> <span class="k">for</span> <span class="n">alias</span> <span class="s1">&#39;default&#39;</span><span class="o">...</span>
+<span class="n">System</span> <span class="n">check</span> <span class="n">identified</span> <span class="n">no</span> <span class="n">issues</span> <span class="p">(</span><span class="mi">0</span> <span class="n">silenced</span><span class="p">)</span><span class="o">.</span>
+<span class="n">F</span><span class="o">.</span>
+<span class="o">======================================================================</span>
+<span class="n">FAIL</span><span class="p">:</span> <span class="n">test_installed_apps</span> <span class="p">(</span><span class="n">todoz</span><span class="o">.</span><span class="n">tests</span><span class="o">.</span><span class="n">tests</span><span class="o">.</span><span class="n">TestInstalledApps</span><span class="p">)</span>
+<span class="o">----------------------------------------------------------------------</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">&quot;/home/adrien/projects/emencia-django-training/todoz/tests/tests.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">9</span><span class="p">,</span> <span class="ow">in</span> <span class="n">test_installed_apps</span>
+    <span class="s1">&#39;Les applications installées sont </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39; ,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">apps</span><span class="p">))</span>
+<span class="ne">AssertionError</span><span class="p">:</span> <span class="n">Les</span> <span class="n">applications</span> <span class="n">installées</span> <span class="n">sont</span> <span class="n">django</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">admin</span> <span class="p">,</span><span class="n">django</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">auth</span> <span class="p">,</span><span class="n">django</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">contenttypes</span> <span class="p">,</span><span class="n">django</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">sessions</span> <span class="p">,</span><span class="n">django</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">messages</span> <span class="p">,</span><span class="n">django</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">staticfiles</span>
+
+<span class="o">----------------------------------------------------------------------</span>
+<span class="n">Ran</span> <span class="mi">2</span> <span class="n">tests</span> <span class="ow">in</span> <span class="mf">3.732</span><span class="n">s</span>
+
+<span class="n">FAILED</span> <span class="p">(</span><span class="n">failures</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">Destroying</span> <span class="n">test</span> <span class="n">database</span> <span class="k">for</span> <span class="n">alias</span> <span class="s1">&#39;default&#39;</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>Maintenant que le test est en place, nous allons pouvoir ajouter notre application !</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">startapp</span> <span class="pre">task</span></code></p>
+<p>Avec la commande <code class="docutils literal notranslate"><span class="pre">tree</span></code>, vous devriez observer le schéma suivant :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+├── manage.py
+├── requirements.txt
+├── tasks
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+└── todoz
+    ├── __init__.py
+    ├── settings.py
+    ├── tests
+    │   ├── __init__.py
+    │   ├── tests_functionnal.py
+    │   ├── tests.py
+    ├── urls.py
+    └── wsgi.py
+</pre></div>
+</div>
+<p>Notre nouvelle application contient un certain nombre de fichier par défaut mais ne font «&nbsp;rien&nbsp;» de particulier pour l’instant.</p>
+<p>Si nous relançons les tests, nous avons toujours une erreur. Effectivement, nous n’avons pas encore ajouté l’application fraîchement créée à notre projet.</p>
+<p>Allons éditer <code class="docutils literal notranslate"><span class="pre">todoz/settings.py</span></code> et ajoutons <code class="docutils literal notranslate"><span class="pre">tasks</span></code> dans le tuple <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code>:</p>
+<p><em>todoz/settings.py</em></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;django.contrib.admin&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.contenttypes&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.sessions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.messages&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.staticfiles&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;tasks&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Un coup <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">test</span></code> et….</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Creating</span> <span class="n">test</span> <span class="n">database</span> <span class="k">for</span> <span class="n">alias</span> <span class="s1">&#39;default&#39;</span><span class="o">...</span>
+<span class="n">System</span> <span class="n">check</span> <span class="n">identified</span> <span class="n">no</span> <span class="n">issues</span> <span class="p">(</span><span class="mi">0</span> <span class="n">silenced</span><span class="p">)</span><span class="o">.</span>
+<span class="o">..</span>
+<span class="o">----------------------------------------------------------------------</span>
+<span class="n">Ran</span> <span class="mi">2</span> <span class="n">tests</span> <span class="ow">in</span> <span class="mf">4.082</span><span class="n">s</span>
+
+<span class="n">OK</span>
+<span class="n">Destroying</span> <span class="n">test</span> <span class="n">database</span> <span class="k">for</span> <span class="n">alias</span> <span class="s1">&#39;default&#39;</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>Nos tests passent ! Nous avons réussi ! :tada:</p>
+<p>Il est grand temps de synchroniser notre projet sur git si ce n’est pas déjà fait !</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git add .
+git commit -m <span class="s2">&quot;Création de l&#39;application tasks et ajout de tests&quot;</span>
+git push origin master
+</pre></div>
+</div>
+<p>Votre projet doit ressembler à celui disponible <a class="reference external" href="https://github.com/emencia/emencia-django-training/tree/applications">ici</a>.</p>
+</div>
+<div class="section" id="conclusion">
+<span id="conclusion"></span><h1>Conclusion<a class="headerlink" href="#conclusion" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Nous avons réussi avec succès à ajouter une application à notre projet et nous avons maintenant 2 tests pour nous assurer de la stabilité de notre projet. Fort heureusement, les tests nous indiquent que tout est «&nbsp;OK&nbsp;» mais la stabilité de notre application est surtout au fait… qu’elle ne fait encore absolument rien.</p>
+<p>Nous allons voir dans la suite comment exploiter au mieux django pour créer nos premiers modèles, nos premières pages, etc…</p>
+<p>Note de fin: nous avons commencé par écrire nos tests dans le dossier qui était présent au début (<code class="docutils literal notranslate"><span class="pre">todoz</span></code>). Si les tests à propos des <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code> restent valide, le test fonctionnel n’est pas bien situé.</p>
+<p>En effet, celui-ci va très rapidement tester des parties du code qui sont spécifiques à certaines applications et il n’y a pas de raison de le laisser dans ce dossier. Au choix, nous pouvons créer un dossier spécifique pour les tests fonctionnels ou bien utiliser différents fichiers qui testeront des parties précises des applications.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Minute papillon ! Où sont les tests ?</a></li>
+<li><a class="reference internal" href="#premier-test-fonctionnel">Premier test fonctionnel</a></li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/TP---Applications-Django.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/TP---Applications-Django.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

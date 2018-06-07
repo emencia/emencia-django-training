@@ -1,0 +1,147 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Description sommaire &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="description-sommaire">
+<span id="description-sommaire"></span><h1>Description sommaire<a class="headerlink" href="#description-sommaire" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Un template modélise comment doit être généré une page ou une de ses parties.</p>
+<p>Un template django peut contenir des blocs, des variables, des instructions… et sert d’abstraction au dessus de la page html.</p>
+<p>En effet, certaines parties des pages webs sont communes à tout le site, certaines parties dépendent d’objet, du contexte du site, de l’heure qu’il est, de la géolocalisation etc…</p>
+<p>Il n’est pas raisonnable d’imaginer écrire une page html différente pour tous les cas possible et de réécrire toujours les mêmes parties d’une page à l’autre… Les templates sont alors un moyen de factoriser le contenu et limiter les répétitions.</p>
+</div>
+<div class="section" id="fonctionnement-django">
+<span id="fonctionnement-django"></span><h1>Fonctionnement Django<a class="headerlink" href="#fonctionnement-django" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Pour générer une page à partir d’un template, Django ouvre le template et remplace ses variables et ses blocs avec le contenu dont il dispose depuis sa vue, puis renvoi le fichier produit. Si dans la majorité des cas, Django produit du <code class="docutils literal notranslate"><span class="pre">html</span></code>, on peut tout aussi bien générer des fichiers textes (mails) etc…</p>
+<p>Pour remplir les templates qui attendent des valeurs, les vues fournissent toujours un «&nbsp;contexte&nbsp;» à leur template, ce contexte contient les variables disponibles (texte, chiffres, etc..).</p>
+</div>
+<div class="section" id="exemple">
+<span id="exemple"></span><h1>Exemple<a class="headerlink" href="#exemple" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>{{ title }}<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  {% for number in numbers %}
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>{{ number }}<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+  {% endfor %}
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Si le contexte utilisé est :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;My favorite numbers&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;numbers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>La page générée sera :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>My favorite numbers<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  
+  <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>1<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>2<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>3<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="les-templates-dans-une-application-django">
+<span id="les-templates-dans-une-application-django"></span><h1>Les templates dans une application django<a class="headerlink" href="#les-templates-dans-une-application-django" title="Lien permanent vers ce titre">¶</a></h1>
+<p>La convention est de ranger les templates dans un répertoire <code class="docutils literal notranslate"><span class="pre">templates/</span></code> puis dans un répertoire du nom de l’application auxquels ils sont destinés.</p>
+<p>Django possède un ordre de recherche particulier pour trouver un template, si un template <code class="docutils literal notranslate"><span class="pre">foo.html</span></code> est présent dans une application tierce mais aussi dans le projet Django, c’est celui de notre projet qui sera utilisé en premier.</p>
+<p>Parfois, on utilise un template par inclusion, c’est à dire qu’on l’appelle directement depuis le template un autre template sans que la vue en soit directement consciente.</p>
+<p>Exemple :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Mon titre<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+{% include &#39;footer.html&#39; %}
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Il est courant de stocker les fichiers html «&nbsp;partiels&nbsp;» en ajoutant un préfixe <code class="docutils literal notranslate"><span class="pre">_</span></code> au nom (<code class="docutils literal notranslate"><span class="pre">_footer.html</span></code>) et/ou en les plaçant dans un dossier <code class="docutils literal notranslate"><span class="pre">partials/</span></code> ou <code class="docutils literal notranslate"><span class="pre">include/</span></code>.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Description sommaire</a></li>
+<li><a class="reference internal" href="#fonctionnement-django">Fonctionnement Django</a></li>
+<li><a class="reference internal" href="#exemple">Exemple</a></li>
+<li><a class="reference internal" href="#les-templates-dans-une-application-django">Les templates dans une application django</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Une-première-approche.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Une-première-approche.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

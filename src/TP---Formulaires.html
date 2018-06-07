@@ -1,0 +1,496 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Création des catégories &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Notre application permet de lister les catégories et afficher les éléments de nos to-dos. Mais nous ne pouvons pas encore en créer ! Ce sera donc notre prochaine étape !</p>
+<div class="section" id="creation-des-categories">
+<span id="creation-des-categories"></span><h1>Création des catégories<a class="headerlink" href="#creation-des-categories" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Comme nous développons un site web, il faut penser à nos utilisateurs finaux : des humains.
+Si on propose une vue de création, il est certain qu’il effectueront des saisies erronées et qu’une vue d’édition sera également nécessaire. Par ailleurs, une vue de suppression sera la bienvenue.</p>
+<p>Pour accélérer un petit peu le TP, voici les tests (à peu près) que l’on doit mettre en place :</p>
+<ul class="simple">
+<li>Vérification des URLs et branchements des views</li>
+<li>Vérification des templates</li>
+<li>Vérification des status codes et comportement selon la méthode de requête (get/post)</li>
+</ul>
+<p>Le fichiers <code class="docutils literal notranslate"><span class="pre">tasks/tests/tests_views.py</span></code> donne (seuls les ajouts sont mentionnés):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">Category</span>
+<span class="kn">from</span> <span class="nn">..views</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CategoryCreateView</span><span class="p">,</span>
+    <span class="n">CategoryDeleteView</span><span class="p">,</span>
+    <span class="n">CategoryListView</span><span class="p">,</span>
+    <span class="n">CategoryUpdateView</span><span class="p">,</span>
+    <span class="n">home_page</span><span class="p">,</span>
+    <span class="n">TodoView</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">CategoryCreateTest</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">setUpTestData</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;category-create&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_url_resolve_to_category_create_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">view</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">view</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">view_class</span> <span class="o">==</span> <span class="n">CategoryCreateView</span>
+
+    <span class="k">def</span> <span class="nf">test_status_code_is_200</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+
+    <span class="k">def</span> <span class="nf">test_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">templates</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="s1">&#39;tasks/category_form.html&#39;</span> <span class="ow">in</span> <span class="n">templates</span>
+
+    <span class="k">def</span> <span class="nf">test_post_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+        <span class="k">assert</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;form&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">errors</span>
+
+    <span class="k">def</span> <span class="nf">test_post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;foo&#39;</span><span class="p">})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">302</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+        <span class="k">assert</span> <span class="n">Category</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span>
+
+
+<span class="k">class</span> <span class="nc">CategoryUpdateTest</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">setUpTestData</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">category</span> <span class="o">=</span> <span class="n">CategoryFactory</span><span class="p">()</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;category-update&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">test_url_resolve_to_category_create_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">view</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">view</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">view_class</span> <span class="o">==</span> <span class="n">CategoryUpdateView</span>
+
+    <span class="k">def</span> <span class="nf">test_status_code_is_200</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+
+    <span class="k">def</span> <span class="nf">test_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">templates</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="s1">&#39;tasks/category_form.html&#39;</span> <span class="ow">in</span> <span class="n">templates</span>
+
+    <span class="k">def</span> <span class="nf">test_post_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+        <span class="k">assert</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;form&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">errors</span>
+
+    <span class="k">def</span> <span class="nf">test_post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;foo2&#39;</span><span class="p">})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">302</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+        <span class="k">assert</span> <span class="n">Category</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;foo2&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">CategoryDeleteTest</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">setUpTestData</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">category</span> <span class="o">=</span> <span class="n">CategoryFactory</span><span class="p">()</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;category-delete&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">test_url_resolve_to_category_create_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">view</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">view</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">view_class</span> <span class="o">==</span> <span class="n">CategoryDeleteView</span>
+
+    <span class="k">def</span> <span class="nf">test_status_code_is_200</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+
+    <span class="k">def</span> <span class="nf">test_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">templates</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="s1">&#39;tasks/category_confirm_delete.html&#39;</span> <span class="ow">in</span> <span class="n">templates</span>
+
+    <span class="k">def</span> <span class="nf">test_post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">Category</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>Pour faire fonctionner ces tests, il nous donc mettre à jours <code class="docutils literal notranslate"><span class="pre">tasks/urls.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^categories/$&#39;</span><span class="p">,</span>
+        <span class="n">views</span><span class="o">.</span><span class="n">CategoryListView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;category-list&#39;</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^categories/create/$&#39;</span><span class="p">,</span>
+        <span class="n">views</span><span class="o">.</span><span class="n">CategoryCreateView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;category-create&#39;</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^categories/edit/(?P&lt;pk&gt;\d+)/$&#39;</span><span class="p">,</span>
+        <span class="n">views</span><span class="o">.</span><span class="n">CategoryUpdateView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;category-update&#39;</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^categories/delete/(?P&lt;pk&gt;\d+)/$&#39;</span><span class="p">,</span>
+        <span class="n">views</span><span class="o">.</span><span class="n">CategoryDeleteView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;category-delete&#39;</span><span class="p">),</span>
+</pre></div>
+</div>
+<p>NB: Dans la première expression régulière, nous rajoutons <code class="docutils literal notranslate"><span class="pre">$</span></code> en fin pour s’assurer que cet URL ne capture pas toutes les URLs commençant par «&nbsp;categories&nbsp;». C’était un oubli de notre part lors des précédents TPs. Cette erreur apparaît immédiatement lorsqu’on fait tourner les tests. Sans le <code class="docutils literal notranslate"><span class="pre">$</span></code>, la vue appelée pour l’URL <code class="docutils literal notranslate"><span class="pre">categories/create</span></code> était <code class="docutils literal notranslate"><span class="pre">CategoryListView</span></code>. Cela montre donc un problème de mapping dans les URLs qui ne renvoie pas vers la vue désirée.</p>
+<p>Nos URLs font ici appel à des vues que nous n’avons pas encore, ajoutons-les immediatement dans <code class="docutils literal notranslate"><span class="pre">tasks/views.py</span></code> :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse_lazy</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CreateView</span><span class="p">,</span>
+    <span class="n">DeleteView</span><span class="p">,</span>
+    <span class="n">ListView</span><span class="p">,</span>
+    <span class="n">TemplateView</span><span class="p">,</span>
+    <span class="n">UpdateView</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">CategoryCreateView</span><span class="p">(</span><span class="n">CreateView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Category</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;category-list&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">CategoryUpdateView</span><span class="p">(</span><span class="n">UpdateView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Category</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;category-list&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">CategoryDeleteView</span><span class="p">(</span><span class="n">DeleteView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Category</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;category-list&#39;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Enfin, même si on n’a pas précisé explicitement nos templates, les templates que django attends sont <code class="docutils literal notranslate"><span class="pre">tasks/templates/tasks/category_form.html</span></code> et <code class="docutils literal notranslate"><span class="pre">tasks/templates/tasks/category_confirm_delete.html</span></code>:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% extends &quot;tasks/base.html&quot; %}
+
+{% block content %}
+    <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span><span class="p">&gt;</span>{% csrf_token %}
+        {{ form.as_p }}
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&#39;OK&#39;</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+{% endblock content %}
+</pre></div>
+</div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% extends &quot;tasks/base.html&quot; %}
+
+{% block content %}
+    Êtes-vous sûr de vouloir supprimer {{ object }} ? Cette opération est définitive.
+    <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span><span class="p">&gt;</span>{% csrf_token %}
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&#39;Supprimer&#39;</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+{% endblock content %}
+</pre></div>
+</div>
+<p>Pour que notre site commence à être utilisable, nous allons mettre à jour le template qui liste les catégories pour proposer aux utilisateurs des liens pour créer, modifier ou supprimer des catégories.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tasks/templates/tasks/category_list.html</span></code></p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% extends &quot;tasks/base.html&quot; %}
+
+{% block content %}
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Catégories<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;button&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;{% url &#39;category-create&#39; %}&quot;</span><span class="p">&gt;</span>Ajouter une catégorie<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+    {% for category in object_list %}
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>{{ category.name }} <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;button&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;{% url &#39;category-update&#39; pk=category.pk %}&quot;</span><span class="p">&gt;</span>Editer<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;button&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;{% url &#39;category-delete&#39; pk=category.pk %}&quot;</span><span class="p">&gt;</span>Supprimer<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    {% empty %}
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Vous n&#39;avez pas encore créé de catégorie.<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    {% endfor %}
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+{% endblock content %}
+</pre></div>
+</div>
+<p>Les tests doivent maintenant passer sans problème et vous pouvez aller admirer notre travail avec <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">runserver</span></code>. A l’URL <code class="docutils literal notranslate"><span class="pre">locahost:8000/categories/</span></code>, vous devez avoir quelque chose comme la capture d’écran suivante :</p>
+<p><img alt="Capture d'ecran de la liste des catégories" src="https://docs.google.com/drawings/d/e/2PACX-1vQ6BYu9GcYS-gKxvyzOsq0-hgIGr-NKqKsGKDt3qlEKVQcqpX3oCoPVT5JqfMMlLVewPYISanoeL1en/pub?w=354&amp;h=225" /></p>
+<p>Et le formulaire de création/édition ressemble à la capture suivante :</p>
+<p><img alt="Capture d'écran du formulaire" src="https://docs.google.com/drawings/d/e/2PACX-1vQMuYfChdxZpTNQhSTocGNq8yDMMANalcC8etxPKk3YfCkudu4CrG6QomwL6kTD5AIi6bOzT77mbj7m/pub?w=422&amp;h=193" /></p>
+</div>
+<div class="section" id="un-peu-d-habillage-bootstrap">
+<span id="un-peu-d-habillage-bootstrap"></span><h1>Un peu d’habillage (bootstrap)<a class="headerlink" href="#un-peu-d-habillage-bootstrap" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Pour l’instant, notre site fonctionne mais il reste extrêmement simple. Si vous souhaitez montrer à votre entourage votre réalisation, il risque de vous faire remarquer que notre application n’est pas très attirante. J’espérais presque tenir jusqu’au bout de cette formation mais il n’est plus possible d’attendre. Habillons un petit peu notre application et ajoutons un framework css.</p>
+<p>Il en existe de nombreux ainsi que de nombreux templates de base (foundation, bootstrap, etc…) mais nous sortons ici du cadre de ce cours. Nous allons nous contenter d’utiliser bootstrap ainsi qu’un template de base de bootstrap.</p>
+<p>Rendez-vous sur <a class="reference external" href="http://getbootstrap.com/">le site de bootstrap</a> pour vous familiariser avec ce nouvel outil.</p>
+<p>Pour ajouter bootstrap, il nous faudra ajouter le style suivant :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css&quot;</span> <span class="na">integrity</span><span class="o">=</span><span class="s">&quot;sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M&quot;</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">&quot;anonymous&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>ainsi que le javascript suivant :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://code.jquery.com/jquery-3.2.1.slim.min.js&quot;</span> <span class="na">integrity</span><span class="o">=</span><span class="s">&quot;sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN&quot;</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">&quot;anonymous&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js&quot;</span> <span class="na">integrity</span><span class="o">=</span><span class="s">&quot;sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4&quot;</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">&quot;anonymous&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js&quot;</span> <span class="na">integrity</span><span class="o">=</span><span class="s">&quot;sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1&quot;</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">&quot;anonymous&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Nos templates deviennent :
+<code class="docutils literal notranslate"><span class="pre">tasks/templates/tasks/base.html</span></code></p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#39;fr&#39;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;width=device-width, initial-scale=1, shrink-to-fit=no&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;description&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;Un site de todo&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;author&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css&quot;</span> <span class="na">integrity</span><span class="o">=</span><span class="s">&quot;sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M&quot;</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">&quot;anonymous&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>ToDoz<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">nav</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;navbar navbar-expand-lg navbar-light bg-light&quot;</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;navbar-brand&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;#&quot;</span><span class="p">&gt;</span>TODOZ<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;navbar-toggler&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;button&quot;</span> <span class="na">data-toggle</span><span class="o">=</span><span class="s">&quot;collapse&quot;</span> <span class="na">data-target</span><span class="o">=</span><span class="s">&quot;#navbarNav&quot;</span> <span class="na">aria-controls</span><span class="o">=</span><span class="s">&quot;navbarNav&quot;</span> <span class="na">aria-expanded</span><span class="o">=</span><span class="s">&quot;false&quot;</span> <span class="na">aria-label</span><span class="o">=</span><span class="s">&quot;Toggle navigation&quot;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;navbar-toggler-icon&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;collapse navbar-collapse&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;navbarNav&quot;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;navbar-nav&quot;</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;nav-item active&quot;</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;nav-link&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;{% url &#39;home&#39; %}&quot;</span><span class="p">&gt;</span>Accueil<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+          <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;nav-item active&quot;</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;nav-link&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;{% url &#39;category-list&#39; %}&quot;</span><span class="p">&gt;</span>Catégories<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+          <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;nav-item active&quot;</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;nav-link&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;{% url &#39;todo&#39; %}&quot;</span><span class="p">&gt;</span>Todos<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+          <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">nav</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">section</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;container&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;padding-top: 30px;&quot;</span><span class="p">&gt;</span>
+      {% block content %}{% endblock content %}
+      <span class="p">&lt;</span><span class="nt">footer</span><span class="p">&gt;</span>Copyright: 2000 - {% now &#39;Y&#39; %}<span class="p">&lt;/</span><span class="nt">footer</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">section</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">tasks/templates/tasks/home.html</span></code></p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% extends &quot;tasks/base.html&quot; %}
+
+{% load static %}
+{% block content %}
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;jumbotron&quot;</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;container&quot;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello, World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;{% static &#39;img/django.png&#39; %}&quot;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&quot;Django logo hexagonal&quot;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">p</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;padding-top: 20px;&quot;</span><span class="p">&gt;</span>Date: {{ date|date }}<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+{% endblock content %}
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">tasks/templates/tasks/category_list.html</span></code></p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% extends &quot;tasks/base.html&quot; %}
+
+{% block content %}
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Catégories<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;btn btn-dark&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;{% url &#39;category-create&#39; %}&quot;</span><span class="p">&gt;</span>Ajouter une catégorie<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">hr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+    {% for category in object_list %}
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>{{ category.name }} <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;btn btn-light&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;{% url &#39;category-update&#39; pk=category.pk %}&quot;</span><span class="p">&gt;</span>Editer<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;btn btn-danger&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;{% url &#39;category-delete&#39; pk=category.pk %}&quot;</span><span class="p">&gt;</span>Supprimer<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    {% empty %}
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Vous n&#39;avez pas encore créé de catégorie.<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    {% endfor %}
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">hr</span><span class="p">&gt;</span>
+{% endblock content %}
+</pre></div>
+</div>
+<p>Ainsi, nous obtenons un rendu un peu plus travaillé mais il reste encore beaucoup de travail pour arriver à une finition professionnelle. Bootstrap donne juste une base pour structurer son projet.</p>
+<p>Vous devriez avoir des pages similaires aux suivantes :</p>
+<p><img alt="Capture écran de la page des catégories avec bootstrap" src="https://docs.google.com/drawings/d/e/2PACX-1vTTtXxSiPyvISItYT-Z3Zn79dvU_nU9qIQXI05EzeInXsdHgpax5eChWthMwHgx38nMBsIuU_rK7FUY/pub?w=931&amp;h=249" /></p>
+<p><img alt="Capture de la page d'accueil avec Bootstrap" src="https://docs.google.com/drawings/d/e/2PACX-1vTshCOP8xma1MaOnQAg2DXSukl_mpP59tgBqF3Yhni8kDlT4l-bn11O5eaF3wK7QKnspq6Arnzu-6ef/pub?w=925&amp;h=574" /></p>
+<p>NB : En changeant les templates, certains de vos tests devraient échouer. Notamment le test d’intégration qui vérifiait que le template commençait par «&nbsp;<html>&nbsp;». La mise à jour de ces tests est laissée en exercice.</p>
+</div>
+<div class="section" id="creation-des-elements-de-to-do">
+<span id="creation-des-elements-de-to-do"></span><h1>Création des éléments de to-do<a class="headerlink" href="#creation-des-elements-de-to-do" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Nous allons maintenant utiliser les mêmes techniques pour ajouter les formulaires de création/édition/suppression pour nos éléments de TODO.</p>
+<p>Rajoutons les tests, urls, views et templates correspondant. Cela devrait commencer à être plus simple maintenant, l’implémentation est laissé en exercice. Si vous avez des soucis, vous pouvez vous référer à <a class="reference external" href="https://github.com/emencia/emencia-django-training/tree/forms">la branche «&nbsp;forms&nbsp;»</a> de ce projet pour récupérer le code nécessaire.</p>
+<p>En mettant à jour notre template de la page <code class="docutils literal notranslate"><span class="pre">todo.html</span></code>, nous devrions être en mesure d’ajouter des éléments dans nos catégories comme dans la capture d’écran suivante.</p>
+<p><img alt="Capture d'écran - Todo page avec bouton pour ajouter des entrées" src="https://docs.google.com/drawings/d/e/2PACX-1vQvi22UfVWjL5CTfPHldWQa-FMmE8ImxY4gDhHyzlWPcITGwa2m13QXaUvbuMHIonc7WQ5KwhODII0Y/pub?w=924&amp;h=223" /></p>
+<p>NB : Pour plus de commodité, nous avons changé les <code class="docutils literal notranslate"><span class="pre">DateField</span></code> en <code class="docutils literal notranslate"><span class="pre">DateTimeField</span></code> dans le modèle <code class="docutils literal notranslate"><span class="pre">ToDoEntry</span></code>.</p>
+</div>
+<div class="section" id="un-vrai-formulaire">
+<span id="un-vrai-formulaire"></span><h1>Un vrai formulaire<a class="headerlink" href="#un-vrai-formulaire" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Jusque là, tout va bien mais vous avez sûrement remarqué que nous avons «&nbsp;triché&nbsp;» : pour un TP sur les formulaires, nous n’en avons pas écrit un seul !</p>
+<p>Nous allons ajouter de ce pas des règles de validation :</p>
+<ul class="simple">
+<li>Il sera désormais impossible d’éditer un élément qui est marqué comme terminé</li>
+<li>Il sera désormais impossible d’éditer un élément s’il date de plus de 10 jours</li>
+</ul>
+<p>Pour cela, nous allons créer un <code class="docutils literal notranslate"><span class="pre">modelForm</span></code> que nous allons utiliser dans nos vues.</p>
+<p>Notons ici que ce changement ne forcera en rien les valeurs au sein de la base de données : les règles de validation ne seront qu’au niveau du formulaire. Par ailleurs, cette validation pourrait être accompagnée d’une vérification au niveau de la vue pour ne pas rendre accessible les formulaires si ces conditions sont remplies.</p>
+<p>Ajoutons un test qui vérifie le comportement souhaité :</p>
+<p><code class="docutils literal notranslate"><span class="pre">tests/tests_forms.py</span></code> :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="kn">from</span> <span class="nn">django.forms.models</span> <span class="kn">import</span> <span class="n">model_to_dict</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
+
+<span class="kn">from</span> <span class="nn">..forms</span> <span class="kn">import</span> <span class="n">ToDoEntryForm</span>
+<span class="kn">from</span> <span class="nn">.factories</span> <span class="kn">import</span> <span class="n">ToDoEntryFactory</span>
+
+
+<span class="k">class</span> <span class="nc">TestToDoEntryForm</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_empty_form_is_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ToDoEntryForm</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">test_form_with_correct_data_is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">todo</span> <span class="o">=</span> <span class="n">ToDoEntryFactory</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">model_to_dict</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ToDoEntryForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">test_form_with_instance_created_eleven_days_ago_is_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">eleven_days_ago</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+        <span class="n">todo</span> <span class="o">=</span> <span class="n">ToDoEntryFactory</span><span class="p">()</span>
+        <span class="n">todo</span><span class="o">.</span><span class="n">creation_date</span> <span class="o">=</span> <span class="n">eleven_days_ago</span>
+        <span class="n">todo</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">model_to_dict</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ToDoEntryForm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">todo</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s1">&#39;__all__&#39;</span> <span class="ow">in</span> <span class="n">form</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">errors</span>
+
+    <span class="k">def</span> <span class="nf">test_form_with_instance_with_done_is_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">todo</span> <span class="o">=</span> <span class="n">ToDoEntryFactory</span><span class="p">(</span><span class="n">done</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">model_to_dict</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ToDoEntryForm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">todo</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s1">&#39;__all__&#39;</span> <span class="ow">in</span> <span class="n">form</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">errors</span>
+</pre></div>
+</div>
+<p>et le fichier <code class="docutils literal notranslate"><span class="pre">tasks/forms.py</span></code> qui va avec :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">ToDoEntry</span>
+
+
+<span class="k">class</span> <span class="nc">ToDoEntryForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">ToDoEntry</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">cleaned_data</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cleaned_data</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">done</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                <span class="s1">&#39;Votre tâche est déjà terminé, vous ne pouvez pas la modifier&#39;</span><span class="p">,</span>
+                <span class="n">code</span><span class="o">=</span><span class="s1">&#39;invalid&#39;</span>
+            <span class="p">)</span>
+
+        <span class="n">ten_days_ago</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">creation_date</span> <span class="o">&lt;</span> <span class="n">ten_days_ago</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                <span class="s1">&#39;Vous ne pouvez plus modifier un élément qui a plus de 10 jours&#39;</span><span class="p">,</span>
+                <span class="n">code</span><span class="o">=</span><span class="s1">&#39;invalid&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cleaned_data</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="conclusion">
+<span id="conclusion"></span><h1>Conclusion<a class="headerlink" href="#conclusion" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Nous avons maintenant vu comment ajouter des vues de création/édition ainsi que les formulaires à proprement parler avec l’ajout de règle de validation simple. Nous pouvons maintenant depuis l’interface gérer entièrement nos données et nos listes.</p>
+</div>
+<div class="section" id="et-maintenant">
+<span id="et-maintenant"></span><h1>Et maintenant ?<a class="headerlink" href="#et-maintenant" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Nous n’avons pas encore la possibilité de marquer un élément comme terminé.
+Cette partie sera laissé en exercice mais vous pourrez trouver de l’inspiration sur <a class="reference external" href="https://github.com/emencia/emencia-django-training/tree/markasdone">la branche «&nbsp;mark_as_done&nbsp;»</a>.</p>
+<p>Le rendu recherché est similaire à la capture suivante :</p>
+<p><img alt="Capture vidéo en marquant un élément comme terminé" src="http://i.imgur.com/rgyPWMJ.gif" /></p>
+<p>Par ailleurs, il serait intéressant d’ajouter un login pour permettre à plusieurs utilisateurs d’utiliser le site afin que chacun puisse profiter de listes différentes. A partir de ce moment là, il commence à être intéressant de mettre en place un Backoffice (système d’administration global) pour gérer l’ensemble des données du site pour l’administrateur. Django possède une solution clé en main pour résoudre ce problème.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Création des catégories</a></li>
+<li><a class="reference internal" href="#un-peu-d-habillage-bootstrap">Un peu d’habillage (bootstrap)</a></li>
+<li><a class="reference internal" href="#creation-des-elements-de-to-do">Création des éléments de to-do</a></li>
+<li><a class="reference internal" href="#un-vrai-formulaire">Un vrai formulaire</a></li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+<li><a class="reference internal" href="#et-maintenant">Et maintenant ?</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/TP---Formulaires.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/TP---Formulaires.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

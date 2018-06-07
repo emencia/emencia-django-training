@@ -1,0 +1,132 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Exemple &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Le principe de la boucle <code class="docutils literal notranslate"><span class="pre">for</span></code> dans les templates est le même concept que la boucle <code class="docutils literal notranslate"><span class="pre">for</span></code> en python.</p>
+<p>Dans l’instruction de la boucle, on indique que l’élément sera assigné sous un nom de variable temporaire à l’intérieur de la boucle pour pouvoir l’utiliser.</p>
+<p>Il est possible d’imbriquer plusieurs boucles dans le cas ou des éléments d’une liste contiennent d’autres listes.</p>
+<div class="section" id="exemple">
+<span id="exemple"></span><h1>Exemple<a class="headerlink" href="#exemple" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># somewhere in the context definition</span>
+<span class="o">...</span>
+<span class="s1">&#39;my_list&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;baz&#39;</span><span class="p">]</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% for item in my_list %}
+  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>{{ item }}<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+{% endfor %}
+</pre></div>
+</div>
+<p>Et cela produira le HTML suivant :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>foo<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>bar<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>baz<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Dans le cas d’un itérable vide, on peut spécifier le contenu à produire avec le tag <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">else</span> <span class="pre">%}</span></code></p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% for item in my_list %}
+    <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>{{ item }}<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+{% empty %}
+    <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Empty !<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+{% endfor %}
+</pre></div>
+</div>
+</div>
+<div class="section" id="forloop">
+<span id="forloop"></span><h1>forloop<a class="headerlink" href="#forloop" title="Lien permanent vers ce titre">¶</a></h1>
+<p>En utilisant le tag <code class="docutils literal notranslate"><span class="pre">for</span></code>, une variable spéciale nommée <code class="docutils literal notranslate"><span class="pre">forloop</span></code> est accessible et contient des propriétés sur l’état de la boucle. On peut notamment noter :</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">forloop.counter</span> <span class="pre">}}</span></code> renvoie la position de l’élément courant dans la liste, il commence toujours à 1</li>
+<li><code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">forloop.counter0</span> <span class="pre">}}</span></code> est identique au précédent mais commence l’indexation à 0</li>
+<li><code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">forloop.first</span> <span class="pre">}}</span></code> est un booléen qui est vrai si l’élément courant est le premier de la liste</li>
+<li><code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">forloop.last</span> <span class="pre">}}</span></code> est identique à la variable précédent mais pour le dernier élément de la liste</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Exemple</a></li>
+<li><a class="reference internal" href="#forloop">forloop</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Le-tag-de-boucle-FOR.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Le-tag-de-boucle-FOR.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

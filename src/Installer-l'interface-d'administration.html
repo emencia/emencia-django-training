@@ -1,0 +1,113 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Installation &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Le module d’admin de django se trouve dans <code class="docutils literal notranslate"><span class="pre">django.contrib.admin</span></code></p>
+<div class="section" id="installation">
+<span id="installation"></span><h1>Installation<a class="headerlink" href="#installation" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Il y a quelques étapes simples pour pouvoir accéder à l’interface d’administration de Django.</p>
+<ul class="simple">
+<li>S’assurer que “django.contrib.admin” est présent dans les <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code>.</li>
+</ul>
+<p>Par ailleurs, l’admin a besoin de : <code class="docutils literal notranslate"><span class="pre">django.contrib.auth</span></code>, <code class="docutils literal notranslate"><span class="pre">django.contrib.contenttypes</span></code>, <code class="docutils literal notranslate"><span class="pre">django.contrib.messages</span></code> et <code class="docutils literal notranslate"><span class="pre">django.contrib.sessions</span></code> dans les <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code>.</p>
+<ul class="simple">
+<li>Assurez vous que <code class="docutils literal notranslate"><span class="pre">django.contrib.auth.context_processors.auth</span></code> et <code class="docutils literal notranslate"><span class="pre">django.contrib.messages.context_processors.messages</span></code> sont bien dans l’option <code class="docutils literal notranslate"><span class="pre">'context_processors'</span></code> dans <code class="docutils literal notranslate"><span class="pre">settings.TEMPLATES</span></code>.</li>
+<li>Assurez vous que <code class="docutils literal notranslate"><span class="pre">django.contrib.auth.middleware.AuthenticationMiddleware</span></code> et <code class="docutils literal notranslate"><span class="pre">django.contrib.messages.middleware.MessageMiddleware</span></code> sont présents dans <code class="docutils literal notranslate"><span class="pre">settings.MIDDLEWARE</span></code>.</li>
+<li>Ajouter les URLs d’admin à votre configuration d’URLs</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^admin/&#39;</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Vous devriez maintenant pouvoir accéder à l’interface admin à l’URL : <code class="docutils literal notranslate"><span class="pre">/admin</span></code>.</p>
+<p>Vous aurez besoin d’avoir un utilisateur avec un statut d’administrateur. Si vous n’en avez pas, vous pouvez le créer avec la commande :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">createsuperuser</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Installer-l&#39;interface-d&#39;administration.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Installer-l&#39;interface-d&#39;administration.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

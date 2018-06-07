@@ -1,0 +1,157 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Virtualenv (cf. doc) &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="virtualenv-cf-doc">
+<span id="virtualenv-cf-doc"></span><h1>Virtualenv <a class="reference external" href="https://virtualenv.pypa.io/en/stable/">(cf. doc)</a><a class="headerlink" href="#virtualenv-cf-doc" title="Lien permanent vers ce titre">¶</a></h1>
+<p>virtualenv est un outil pour créer des environnements python isolés de ceux du système. Vous pouvez donc facilement travailler avec un site en Django version 1.11 et un site en Django v1.8.
+virtualenv est régulièrement utilisé en même temps que virtualenvwrapper qui simplifie un peu les worflow de création / suppression de virtualenv mais n’est pas obligatoire. Se référer à la documentation officielle pour l’installation.</p>
+<p>Un problème classique que les virtualenv résolvent est la gestion des dépendances et des versions (et indirectement des permissions). En mettant à jour les paquets au sein d’un virtualenv, tous les paquets système ou les autres virtualenv restent inchangés et nous n’avons aucune crainte.</p>
+</div>
+<div class="section" id="le-shell-interactif-django">
+<span id="le-shell-interactif-django"></span><h1>Le shell interactif django<a class="headerlink" href="#le-shell-interactif-django" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Django offre un set de commandes assez utile pour le développement. La liste est accessible si on exécute la commande suivante :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Vous devriez avoir une liste assez conséquente comme la suivante :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Type</span> <span class="s1">&#39;manage.py help &lt;subcommand&gt;&#39;</span> <span class="k">for</span> <span class="n">help</span> <span class="n">on</span> <span class="n">a</span> <span class="n">specific</span> <span class="n">subcommand</span><span class="o">.</span>
+
+<span class="n">Available</span> <span class="n">subcommands</span><span class="p">:</span>
+
+<span class="p">[</span><span class="n">auth</span><span class="p">]</span>
+    <span class="n">changepassword</span>
+    <span class="n">createsuperuser</span>
+
+<span class="p">[</span><span class="n">django</span><span class="p">]</span>
+    <span class="n">check</span>
+    <span class="n">compilemessages</span>
+    <span class="n">createcachetable</span>
+    <span class="n">dbshell</span>
+    <span class="n">diffsettings</span>
+    <span class="n">dumpdata</span>
+    <span class="n">flush</span>
+    <span class="n">inspectdb</span>
+    <span class="n">loaddata</span>
+    <span class="n">makemessages</span>
+    <span class="n">makemigrations</span>
+    <span class="n">migrate</span>
+    <span class="n">runfcgi</span>
+    <span class="n">shell</span>
+    <span class="n">showmigrations</span>
+    <span class="n">sql</span>
+    <span class="n">sqlall</span>
+    <span class="n">sqlclear</span>
+    <span class="n">sqlcustom</span>
+    <span class="n">sqldropindexes</span>
+    <span class="n">sqlflush</span>
+    <span class="n">sqlindexes</span>
+    <span class="n">sqlmigrate</span>
+    <span class="n">sqlsequencereset</span>
+    <span class="n">squashmigrations</span>
+    <span class="n">startapp</span>
+    <span class="n">startproject</span>
+    <span class="n">syncdb</span>
+    <span class="n">test</span>
+    <span class="n">testserver</span>
+    <span class="n">validate</span>
+
+<span class="p">[</span><span class="n">sessions</span><span class="p">]</span>
+    <span class="n">clearsessions</span>
+
+<span class="p">[</span><span class="n">staticfiles</span><span class="p">]</span>
+    <span class="n">collectstatic</span>
+    <span class="n">findstatic</span>
+    <span class="n">runserver</span>
+</pre></div>
+</div>
+<p>Le nom de la plupart des méthodes est suffisamment explicite mais nous verrons un peu plus en détail les commandes les plus utiles par la suite.</p>
+<p>NB : Avec l’ajout de certains modules, d’autres commandes peuvent être ajoutées à cette liste</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Virtualenv (cf. doc)</a></li>
+<li><a class="reference internal" href="#le-shell-interactif-django">Le shell interactif django</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Outils-pour-le-développement.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Outils-pour-le-développement.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,450 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Création de notre page d’accueil &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="creation-de-notre-page-daccueil">
+<span id="creation-de-notre-page-daccueil"></span><h1>Création de notre page d’accueil<a class="headerlink" href="#creation-de-notre-page-daccueil" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="section" id="une-url">
+<span id="une-url"></span><h2>Une URL<a class="headerlink" href="#une-url" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Une fois n’est pas coutume, nous allons commencer avec un test. Nous avons déjà vu la pratique, il ne reste donc plus qu’à mettre la théorie en pratique et nous pouvons donc écrire les tests connaissant le fonctionnement attendu.</p>
+<p>Nous allons utiliser la méthodologie Test Driven Development (TDD). Reprenons la base de code du précédent TP.
+Dans notre application <code class="docutils literal notranslate"><span class="pre">tasks</span></code>, supprimons le fichiers <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> et créons un dossier <code class="docutils literal notranslate"><span class="pre">tests</span></code> (ne pas oublier le fichier <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>). Créons notre premier fichier de tests : <code class="docutils literal notranslate"><span class="pre">tests_views.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">resolve</span>
+
+<span class="kn">from</span> <span class="nn">tasks.views</span> <span class="kn">import</span> <span class="n">home_page</span>
+
+
+<span class="k">class</span> <span class="nc">HomePageTest</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_root_url_resolve_to_home_page_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">root_view</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">root_view</span><span class="o">.</span><span class="n">func</span> <span class="o">==</span> <span class="n">home_page</span>
+</pre></div>
+</div>
+<p>Ce test vérifie que l’url racine de notre site web appelle bien la vue <code class="docutils literal notranslate"><span class="pre">home_page</span></code>.</p>
+<p>On peut alors lancer ce test avec la commande <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">test</span></code>. Vous devriez obtenir l’erreur suivante :</p>
+<p><code class="docutils literal notranslate"><span class="pre">ImportError:</span> <span class="pre">cannot</span> <span class="pre">import</span> <span class="pre">name</span> <span class="pre">'home_page'</span></code></p>
+<p>Voilà donc nos tests qui nous indiquent les étapes à suivre !</p>
+<p>Allons éditer notre fichier <code class="docutils literal notranslate"><span class="pre">views.py</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">home_page</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</div>
+<p>Vous vous dîtes sûrement que je me moque de vous. On a vu dans la partie théorique à quoi doit ressembler une vue, cette étape semble idiote et une vrai perte de temps. Faîtes moi un petit peu confiance. Laissons nous guider par notre test.</p>
+<p>En relançant les tests, nous avons maintenant l’erreur suivante :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">django</span><span class="o">.</span><span class="n">urls</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Resolver404</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;tried&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="o">&lt;</span><span class="n">RegexURLResolver</span> <span class="o">&lt;</span><span class="n">RegexURLPattern</span> <span class="nb">list</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">admin</span><span class="p">:</span><span class="n">admin</span><span class="p">)</span> <span class="o">^</span><span class="n">admin</span><span class="o">/&gt;</span><span class="p">]],</span> <span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Cela nous indique qu’il n’y a pas d’URLs qui semblent correspondre à l’URL demandée (<code class="docutils literal notranslate"><span class="pre">'/'</span></code>).</p>
+<p>Effectivement nous n’avons pas créé d’URL. C’est parti ! Créons un fichiers <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> dans notre application <code class="docutils literal notranslate"><span class="pre">tasks</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^$&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">home_page</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;home&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Cette fois, notre URL existe ! Relançons les tests.</p>
+<p>Nous obtenons la même erreur que précédemment. Que se passe-t-il ? Nous avons correctement ajouté un fichier d’url pourtant.</p>
+<p>Il se trouve que ce fichier d’url n’est pas utilisé par notre projet Django. Pour cela, nous allons éditer le fichier <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> de notre dossier <code class="docutils literal notranslate"><span class="pre">todoz</span></code> et inclure les URLs définies dans notre application <code class="docutils literal notranslate"><span class="pre">tasks</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^admin/&#39;</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;tasks.urls&#39;</span><span class="p">)),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Relançons les tests et nous obtenons une nouvelle erreur, youpi ! Nous avons progressé !</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">TypeError</span><span class="p">:</span> <span class="n">view</span> <span class="n">must</span> <span class="n">be</span> <span class="n">a</span> <span class="n">callable</span> <span class="ow">or</span> <span class="n">a</span> <span class="nb">list</span><span class="o">/</span><span class="nb">tuple</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">case</span> <span class="n">of</span> <span class="n">include</span><span class="p">()</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Cette erreur nous explique qu’une vue doit être «&nbsp;<em>callable</em>&nbsp;», autrement dit, on doit pouvoir appeler une vue. Il me semble avoir déjà insister sur la nature d’une vue… Une vue est une fonction !</p>
+<p>Editons à nouveau notre fichier <code class="docutils literal notranslate"><span class="pre">tasks/views.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">home_page</span><span class="p">():</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>En exécutant les tests, nous observons que le test précédemment en échec passe. Victoire !</p>
+<p>Nous avons créé une URL qui est bien associé à la vue voulue !</p>
+<p>Vous devez avoir remarqué en revanche que notre test fonctionnel est en échec. Quel enfer me direz vous !</p>
+<p>Bien au contraire, nous devons nous réjouir. En effet, nous savons pertinemment qu’une vue est une fonction qui prend en entrée une requête et retourne une réponse. Notre vue ne prend actuellement rien en entrée et ne retourne rien.</p>
+<p>Cependant, nous n’avons pas écrit de tests spécifiques à ces comportements mais nous avions un précédent test qui casse. Regardons en détail. Le test fonctionnel se rend sur l’URL <code class="docutils literal notranslate"><span class="pre">'/'</span></code> et vérifie que la page initiale de Django s’affiche bien. Il se trouve que nous avons défini une nouvelle URL correspondant à <code class="docutils literal notranslate"><span class="pre">'/'</span></code>, Django n’a plus de raison de nous afficher sa page par défaut. Ainsi, le test se rend sur notre page d’accueil et lève immédiatement une erreur car notre vue n’est pas correcte.</p>
+<p>Plutôt que d’essayer de réparer ce test immédiatement qui est un test d’intégration, nous allons ajouter d’autres tests plus spécifiques à la page d’accueil et écrire notre première vue !</p>
+</div>
+<div class="section" id="une-vue">
+<span id="une-vue"></span><h2>Une vue<a class="headerlink" href="#une-vue" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Dans <code class="docutils literal notranslate"><span class="pre">tasks/tests/tests_views.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpRequest</span>
+<span class="o">...</span>
+
+<span class="o">...</span>
+    <span class="k">def</span> <span class="nf">test_home_page_html</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="p">()</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">home_page</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span>
+        <span class="k">assert</span> <span class="n">content</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&lt;html&gt;&#39;</span><span class="p">),</span> <span class="s1">&#39;Le contenu ne commence pas par &lt;html&gt;&#39;</span>
+        <span class="k">assert</span> <span class="sa">b</span><span class="s1">&#39;&lt;title&gt;ToDoz&lt;/title&gt;&#39;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">,</span> <span class="s1">&#39;Le contenu ne contient pas Todoz en title&#39;</span>
+        <span class="k">assert</span> <span class="n">content</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&lt;/html&gt;&#39;</span><span class="p">),</span> <span class="s1">&#39;Le contenu ne se termine pas par &lt;/html&gt;&#39;</span>
+</pre></div>
+</div>
+<p>En faisant tourner les tests, nous obtenons :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">TypeError</span><span class="p">:</span> <span class="n">home_page</span><span class="p">()</span> <span class="n">takes</span> <span class="mi">0</span> <span class="n">positional</span> <span class="n">arguments</span> <span class="n">but</span> <span class="mi">1</span> <span class="n">was</span> <span class="n">given</span>
+</pre></div>
+</div>
+<p>Exactement ce que nous attendions. Nous allons pouvoir écrire notre première vue. Éditons <code class="docutils literal notranslate"><span class="pre">tasks/views.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">home_page</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Vous devez penser que je suis fou, je n’ai ajouter qu’un argument à ma fonction. L’intérêt est ici pédagogique mais pas seulement. Cela nous montre comment avancer pas à pas tout en étant toujours assurer d’avoir écrit du code qui est <strong>testé</strong> et dont on est assuré du bon fonctionnement. Si le test est toujours en échec, ce n’est pas grave, on saura alors quelle est la prochaine étape. Si l’exemple semble idiot dans ce cas précis, suivre cette démarche lors de vues très compliqué peut faire une grosse différence.</p>
+<p>Lançons les tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">AttributeError</span><span class="p">:</span> <span class="s1">&#39;NoneType&#39;</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s1">&#39;content&#39;</span>
+</pre></div>
+</div>
+<p>Très bien, en effet, notre vue ne retourne rien (<code class="docutils literal notranslate"><span class="pre">NoneType</span></code>) et n’a donc pas de contenu.
+Éditons notre fichier de vues :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+
+
+<span class="k">def</span> <span class="nf">home_page</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Voilà qui devrait faire l’affaire.</p>
+<p>Tests :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">AssertionError</span><span class="p">:</span> <span class="n">Le</span> <span class="n">contenu</span> <span class="n">ne</span> <span class="n">commence</span> <span class="n">pas</span> <span class="n">par</span> <span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Nous pouvons maintenant passer à la rédaction de notre premier contenu !</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+
+
+<span class="k">def</span> <span class="nf">home_page</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span>
+        <span class="s2">&quot;&lt;html&gt;&lt;title&gt;ToDoz&lt;/title&gt;&lt;h1&gt;Hello World!&lt;/h1&gt;&lt;/html&gt;&quot;</span>
+    <span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Les tests unitaires nous indiquent que tout est bon maintenant ! Nous allons mettre à jour notre test fonctionnel (<code class="docutils literal notranslate"><span class="pre">todoz/tests/tests_functionnal.py</span></code>) :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+        <span class="c1"># Chloe has a sharp eye and notice the title !</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;ToDoz&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">browser</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Si nous éxecutons les tests à nouveau, nous obtenons la réponse tant attendu :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Creating</span> <span class="n">test</span> <span class="n">database</span> <span class="k">for</span> <span class="n">alias</span> <span class="s1">&#39;default&#39;</span><span class="o">...</span>
+<span class="n">System</span> <span class="n">check</span> <span class="n">identified</span> <span class="n">no</span> <span class="n">issues</span> <span class="p">(</span><span class="mi">0</span> <span class="n">silenced</span><span class="p">)</span><span class="o">.</span>
+<span class="o">....</span>
+<span class="o">----------------------------------------------------------------------</span>
+<span class="n">Ran</span> <span class="mi">4</span> <span class="n">tests</span> <span class="ow">in</span> <span class="mf">3.627</span><span class="n">s</span>
+
+<span class="n">OK</span>
+</pre></div>
+</div>
+<p>Vous pouvez vous rendre à l’URL <code class="docutils literal notranslate"><span class="pre">127.0.0.1:8000/</span></code> et observer votre première page. Nous y sommes arrivé !</p>
+</div>
+</div>
+<div class="section" id="notre-premier-template-variables">
+<span id="notre-premier-template-variables"></span><h1>Notre premier template &amp; variables<a class="headerlink" href="#notre-premier-template-variables" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Nous allons faire évoluer notre template mais avant d’ajouter quoi que ce soit en contenu, nous allons extraire le html dans un fichier dédié.</p>
+<p>Créons le fichier <code class="docutils literal notranslate"><span class="pre">tasks/templates/tasks/home.html</span></code>:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>ToDoz<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>et notre vue devient alors :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+
+
+<span class="k">def</span> <span class="nf">home_page</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;tasks/home.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Nous avons utiliser la fonction <code class="docutils literal notranslate"><span class="pre">render</span></code> qui nous permet de passer en argument la requête et le chemin du template sans avoir à charger le template et fabriquer la réponse à la main. En faisant tourner les tests, nous devons avoir le même résultat qu’avant : “OK” !</p>
+<p>Nous allons utiliser une variable pour se familiariser avec le concept des templates. Ajouter la date du jour.
+Commençons par ajouter un test pour s’assurer qu’une date est bien ajoutée au contexte.</p>
+<p>Dans <code class="docutils literal notranslate"><span class="pre">tasks/tests/tests_views.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="k">class</span> <span class="nc">HomePageTest</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">test_date_in_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">&#39;date&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">,</span> <span class="s1">&#39;Le contexte ne contient pas la variable &quot;date&quot;&#39;</span>
+
+</pre></div>
+</div>
+<p>Nous utilisons ici <code class="docutils literal notranslate"><span class="pre">self.client</span></code> qui fabrique une requête pour nous et fournit surtout la réponse avec quelques informations supplémentaires (comme le contexte utilisé..!)</p>
+<p>Tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">AssertionError</span><span class="p">:</span> <span class="n">Le</span> <span class="n">contexte</span> <span class="n">ne</span> <span class="n">contient</span> <span class="n">pas</span> <span class="n">la</span> <span class="n">variable</span> <span class="s2">&quot;date&quot;</span>
+</pre></div>
+</div>
+<p>Nous allons donc ajouter une variable au contexte de notre vue :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+
+
+<span class="k">def</span> <span class="nf">home_page</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;tasks/home.html&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Nos 5 tests passent !</p>
+<p>Ajoutons un autre test pour vérifier que notre template a bien une date.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="o">...</span>
+<span class="k">class</span> <span class="nc">HomePageTest</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">test_date_in_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="p">()</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">home_page</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%b. </span><span class="si">%-d</span><span class="s1">, %Y&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">content</span><span class="p">,</span> <span class="s1">&#39;{date} n</span><span class="se">\&#39;</span><span class="s1">est pas dans {content}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Tests :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AssertionError: Jan. 1, 2000 n&#39;est pas dans &lt;html&gt;
+    &lt;title&gt;ToDoz&lt;/title&gt;
+    &lt;h1&gt;Hello World!&lt;/h1&gt;   
+&lt;/html&gt;
+</pre></div>
+</div>
+<p>Ajoutons une ligne dans notre fichier html</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>ToDoz<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Date: {{ date|date }}<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Nous avons ajouter la variable <code class="docutils literal notranslate"><span class="pre">date</span></code> à laquelle on applique le filtre <code class="docutils literal notranslate"><span class="pre">date</span></code>. Attention, il se trouve que le filtre a le même nom que notre variable mais cela reste complètement indépendant. Nous pourrions avions <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">today|date</span> <span class="pre">}}</span></code>.</p>
+<p>Le filtre <code class="docutils literal notranslate"><span class="pre">date</span></code> permet d’obtenir une format plus agréable pour les dates. Il est laissé en exercice au lecteur d’essayer avec ou sans le filtre, en y ajoutant éventuellement des options etc…</p>
+<p>Tests :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Ran</span> <span class="mi">6</span> <span class="n">tests</span> <span class="ow">in</span> <span class="mf">4.579</span><span class="n">s</span>
+
+<span class="n">OK</span>
+</pre></div>
+</div>
+<p>Pour se familiariser avec un tag de template, nous allons utilisé le tag <code class="docutils literal notranslate"><span class="pre">now</span></code> qui permet de manipuler la date d’aujourd’hui. Utilisons ce tag pour mettre un copyright en bas de notre page.</p>
+<p>Commençons par ajouter un nouveau test :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">test_copyright_date</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="p">()</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">home_page</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="n">this_year</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">year</span>
+        <span class="k">assert</span> <span class="s1">&#39;Copyright: 2000 - {year}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">this_year</span><span class="p">)</span> <span class="ow">in</span> <span class="n">content</span>
+</pre></div>
+</div>
+<p>Le test casse, nous pouvons donc écrire le minimum de code pour faire passer ce test :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>ToDoz<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Date: {{ date|date }}<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">footer</span><span class="p">&gt;</span>Copyright: 2000 - {% now &#39;Y&#39; %}<span class="p">&lt;/</span><span class="nt">footer</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Et voilà que nos tests passent à nouveau.</p>
+<div class="section" id="et-un-peu-d-heritage-de-template">
+<span id="et-un-peu-d-heritage-de-template"></span><h2>Et un peu d’héritage de template<a class="headerlink" href="#et-un-peu-d-heritage-de-template" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Non satisfait du dernier ajout de “Copyright” sur notre page, on se dit que c’est typiquement un élément que l’on voudra afficher sur toutes nos pages. Comme le titre «&nbsp;ToDoz&nbsp;». C’est peut être le moment de se créer un template parent avec un block pour gérer notre contenu.</p>
+<p>Créons un fichier <code class="docutils literal notranslate"><span class="pre">templates/tasks/base.html</span></code> :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>ToDoz<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    {% block content %}
+    {% endblock content %}
+    <span class="p">&lt;</span><span class="nt">footer</span><span class="p">&gt;</span>Copyright: 2000 - {% now &#39;Y&#39; %}<span class="p">&lt;/</span><span class="nt">footer</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Notre template <code class="docutils literal notranslate"><span class="pre">home.html</span></code> devient :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{% extends &quot;tasks/base.html&quot; %}
+
+{% block content %}
+    &lt;h1&gt;Hello World!&lt;/h1&gt;
+    &lt;p&gt;Date: {{ date|date }}&lt;/p&gt;
+{% endblock content %}
+</pre></div>
+</div>
+<p>Chaque nouvelle page html peut hériter de base.html et profiter de ce qui a déjà été écrit et testé.</p>
+<p>Les tests tournent toujours sans erreur. Nous venons d’effectuer sans le dire notre premier «&nbsp;refactor&nbsp;». Nous n’avons ajouté aucune fonctionnalité, corrigé aucun bug mais nous avons préparé le terrain pour le futur et réécrit une partie de notre code pour faire face aux futurs défis. L’utilisation des tests ici est primordiale. Nous sommes assuré qu’avec ces nouveaux changements, nous n’avons pas altéré notre site et nous sommes toujours dans un état «&nbsp;fonctionnel&nbsp;».</p>
+<p>Pour l’exemple, nous allons ajouter un test qui vérifie les templates utilisés</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">test_base_template_is_used</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="n">templates_used</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">templates</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="p">[</span><span class="s1">&#39;tasks/home.html&#39;</span><span class="p">,</span> <span class="s1">&#39;tasks/base.html&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">templates_used</span><span class="p">,</span> <span class="n">templates_used</span>
+</pre></div>
+</div>
+<p>Ici, ce test a peu d’utilisé car nous savons déjà que le template est bien utilisé en raison du contenu présent. Cela reste cependant un bon exemple à garder sous le coude dans le cas de construction plus complexes.</p>
+<p>Les tests devraient toujours passer à ce stade. Nous avons maintenant 8 tests automatiques pour nous assurer que notre application fonctionne correctement. Nous pouvons les lancer très régulièrement sans avoir à ouvrir un navigateur. Commencez vous à ressentir ce petit sentiment de sécurité ? La majorité des erreurs que l’on aurait pu faire (fautes de frappe par exemple) sont très vite attrapés avec cette approche.</p>
+</div>
+<div class="section" id="utilisation-de-fichiers-statiques-et-du-tag-url">
+<span id="utilisation-de-fichiers-statiques-et-du-tag-url"></span><h2>Utilisation de fichiers statiques et du tag <code class="docutils literal notranslate"><span class="pre">url</span></code><a class="headerlink" href="#utilisation-de-fichiers-statiques-et-du-tag-url" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Pour compléter un petit peu notre exemple, nous allons ajouter une image et un lien. Les tests sont laissés en exercice car il s’agit ici de découvrir les tags plus que de réellement avancer sur les fonctionnalités de notre application.</p>
+<p>Supposons que nous souhaitons avoir sur l’intégralité de nos pages un lien pour revenir à notre page d’accueil.</p>
+<p>Nous allons devoir éditer notre template <code class="docutils literal notranslate"><span class="pre">base.html</span></code> :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>ToDoz<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    {% block content %}
+    {% endblock content %}
+    <span class="p">&lt;</span><span class="nt">footer</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#39;{% url &quot;home&quot; %}&#39;</span><span class="p">&gt;</span>Accueil<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span> | Copyright: 2000 - {% now &#39;Y&#39; %}
+    <span class="p">&lt;/</span><span class="nt">footer</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Nous avons ici utiliser <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">url</span> <span class="pre">'home'</span> <span class="pre">%}</span></code> car nos URLs définissent une URL avec comme attribut <code class="docutils literal notranslate"><span class="pre">name</span></code>: <code class="docutils literal notranslate"><span class="pre">'home'</span></code></p>
+<p>Ainsi, si on inspecte le site (rappel: 127.0.0.1:8000), on remarque qu’il y a bien un lien vers 127.0.0.1:8000/ qui est notre page d’accueil. Ce lien restera le même pour toutes les pages héritant de <code class="docutils literal notranslate"><span class="pre">base.html</span></code></p>
+<p>Ajoutons enfin l’image de votre choix à notre page d’accueil.</p>
+<p>Pour cela, commençons par ajouter l’arborescence suivante dans <code class="docutils literal notranslate"><span class="pre">tasks</span></code>: <code class="docutils literal notranslate"><span class="pre">static/img/</span></code>.</p>
+<p>Et ajoutons l’image de notre choix dans ce dossier. Si vous manquez d’imagination comme moi, vous pouvez ajouter une image de <code class="docutils literal notranslate"><span class="pre">Django</span></code>. Mon image s’appelle donc <code class="docutils literal notranslate"><span class="pre">django.png</span></code>.</p>
+<p>Retour à l’édition du template :</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% extends &quot;tasks/base.html&quot; %}
+
+{% load static %}
+{% block content %}
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;{% static &#39;img/django.png&#39; %}&quot;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&quot;Django logo hexagonal&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Date: {{ date|date }}<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+{% endblock content %}
+</pre></div>
+</div>
+</div>
+<div class="section" id="emballe-c-est-pese">
+<span id="emballe-c-est-pese"></span><h2>Emballé c’est pesé<a class="headerlink" href="#emballe-c-est-pese" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Nous avons donc réussi à obtenir une vue pour notre page d’accueil tout en utilisant un template, un filtre, une variable de template, un tag de template, de l’héritage de template, l’utilisation de contexte et en bonus, les tag d’url et d’image.</p>
+<p>Nous avons le rendu suivant :</p>
+<p><img alt="Rendu première vue" src="https://docs.google.com/drawings/d/e/2PACX-1vQB8W993qJdGaBffoI7dkJTaW9yqYS6MEBCCQ5905PCwO_Dob6oyknjc6NH5VNvMwtM9sStMyBXnGAA/pub?w=346&amp;h=509" /></p>
+<p>En bonus, il pourrait être intéressant de «&nbsp;refactorer&nbsp;» notre vue pour utiliser l’approche en Class-Based-View (CBV).</p>
+<p>En sautant les étapes intermédiaires, voici à quoi ressemblerait une telle vue:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">TemplateView</span>
+
+
+<span class="k">class</span> <span class="nc">HomePageView</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;tasks/home.html&#39;</span>
+
+    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">context</span>
+</pre></div>
+</div>
+<p>Dans la suite des travaux pratiques, nous allons privilégier les CBVs car nous allons utiliser entre autres des vues en listes et en détail où ces dernières se révèlent particulièrement efficaces. Pour la vue de ce TP, une vue simple est amplement suffisante et reste tout à fait correcte. Les deux approches ont leurs avantages et inconvénients.</p>
+<p>L’état de l’application peut être récupéré sur <a class="reference external" href="https://github.com/emencia/emencia-django-training/tree/first_views">cette branche</a>. Si vous n’avez rien commité depuis le début de ce TP et j’espère que ce n’est pas le cas, il est grand temps de le faire !</p>
+</div>
+<div class="section" id="conclusion">
+<span id="conclusion"></span><h2>Conclusion<a class="headerlink" href="#conclusion" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Nous avons réussi à créer à l’aide de tests automatiques une vue qui comprend la grosse majorité des fonctionnalités dont vous aurez besoin pour une page d’accueil complète. Reste à ajouter du contenu, éventuellement un framework CSS pour simplifier la mise en place d’une charte graphique et éventuellement un peu de javascript pour des effets dynamique sur la page. Cela sort un peu du cadre de cette formation. Nous nous concentrerons dans la suite par l’interaction avec la base de données et l’utilisation de formulaires !</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Création de notre page d’accueil</a><ul>
+<li><a class="reference internal" href="#une-url">Une URL</a></li>
+<li><a class="reference internal" href="#une-vue">Une vue</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#notre-premier-template-variables">Notre premier template &amp; variables</a><ul>
+<li><a class="reference internal" href="#et-un-peu-d-heritage-de-template">Et un peu d’héritage de template</a></li>
+<li><a class="reference internal" href="#utilisation-de-fichiers-statiques-et-du-tag-url">Utilisation de fichiers statiques et du tag <code class="docutils literal notranslate"><span class="pre">url</span></code></a></li>
+<li><a class="reference internal" href="#emballe-c-est-pese">Emballé c’est pesé</a></li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/TP-Vues-&amp;-templates.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/TP-Vues-&amp;-templates.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

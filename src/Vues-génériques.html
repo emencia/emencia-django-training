@@ -1,0 +1,183 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Vues génériques ou Class Based Views &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vues-generiques-ou-class-based-views">
+<span id="vues-generiques-ou-class-based-views"></span><h1>Vues génériques ou Class Based Views<a class="headerlink" href="#vues-generiques-ou-class-based-views" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Nous avons déjà aborder les vues dites fonctionnelles ou simples. Je vous rassure tout de suite, il n’y a pas de vue «&nbsp;compliquées&nbsp;». Cependant, il y a certains cas d’utilisation qui sont suffisamment courant pour pouvoir bénéficier de petits raccourcis au sein de django.</p>
+<p>Plutôt qu’utiliser une approche fonctionnelle, nous pouvons définir les vues comme étant des classes.</p>
+<p>«&nbsp;Mais c’est impossible, nous avons appris qu’une vue <strong>est une fonction</strong> !!&nbsp;»</p>
+<p>C’est tout à fait vrai. L’astuce va être d’écrire nos vues comme des classes pour pouvoir bénéficier d’héritage, de mixin et de découplage de notre logique dans différentes méthodes mais au moment de lier nos classes de vues aux URLS, nous utiliserons une méthode de la classe qui permet d’utiliser cette dernière comme une fonction. Cette méthode magique s’appelle <code class="docutils literal notranslate"><span class="pre">as_view</span></code>.</p>
+<div class="section" id="un-premier-exemple">
+<span id="un-premier-exemple"></span><h2>Un premier exemple<a class="headerlink" href="#un-premier-exemple" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Prenons un exemple concret :</p>
+<p>Nous avons vu comment un template était construit avec son contexte.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+{% for city in cities %}
+    <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>{{ city }}<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+{% endfor %}
+<span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">Context</span><span class="p">,</span> <span class="n">loader</span>
+
+
+<span class="k">def</span> <span class="nf">cities_list</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">cities</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Paris&#39;</span><span class="p">,</span> <span class="s1">&#39;New York&#39;</span><span class="p">,</span> <span class="s1">&#39;Singapore&#39;</span><span class="p">]</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s1">&#39;my_app/cities_list.html&#39;</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">({</span>
+        <span class="s1">&#39;cities&#39;</span><span class="p">:</span> <span class="n">cities</span><span class="p">,</span>
+    <span class="p">})</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">request</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Bien que cette vue soit tout à fait correcte, il n’en reste pas moins que <code class="docutils literal notranslate"><span class="pre">loader.get_template()</span></code>, <code class="docutils literal notranslate"><span class="pre">HttpResponse</span></code>, <code class="docutils literal notranslate"><span class="pre">template.render()</span></code> et la construction du contexte apporte un peu de lourdeur et freine la compréhension de cette vue pourtant très simple.</p>
+<p>Les éléments clés pour comprendre ce qu’il se passe sont:</p>
+<ul class="simple">
+<li>le template utilisé</li>
+<li>le contexte</li>
+</ul>
+<p>Avec une vue générique, on obtient:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.views</span> <span class="kn">import</span> <span class="n">generic</span>
+
+
+<span class="k">class</span> <span class="nc">CityList</span><span class="p">(</span><span class="n">generic</span><span class="o">.</span><span class="n">TemplateView</span><span class="p">):</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;my_app/cities.html&#39;</span>
+
+    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;cities&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Paris&#39;</span><span class="p">,</span> <span class="s1">&#39;New York&#39;</span><span class="p">,</span> <span class="s1">&#39;Singapore&#39;</span><span class="p">]})</span>
+        <span class="k">return</span> <span class="n">context</span>
+</pre></div>
+</div>
+<p>Toute la complexité est «&nbsp;cachée&nbsp;» dans la mécanique de la classe <code class="docutils literal notranslate"><span class="pre">TemplateView</span></code>.</p>
+</div>
+<div class="section" id="en-allant-plus-loin">
+<span id="en-allant-plus-loin"></span><h2>En allant plus loin<a class="headerlink" href="#en-allant-plus-loin" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Nous allons voir dans la suite comment interagir avec la base de données et plutôt que donner une liste de valeurs pour <code class="docutils literal notranslate"><span class="pre">cities</span></code>, nous pourrons récupérer depuis la base de données une liste de valeurs.</p>
+<p>Les vues génériques nous permettront à partir d’un modèle de créer très rapidement les pages comme les vues en liste, en détail, les formulaires de création, d’édition, suppression etc…</p>
+<p>Par exemple, la vue en détail et en liste des villes donneraient:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.views</span> <span class="kn">import</span> <span class="n">generic</span>
+
+<span class="kn">from</span> <span class="nn">my_app.models</span> <span class="kn">import</span> <span class="n">City</span>
+
+
+<span class="k">class</span> <span class="nc">CityDetail</span><span class="p">(</span><span class="n">generic</span><span class="o">.</span><span class="n">DetailView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">City</span>
+
+
+<span class="k">class</span> <span class="nc">CityList</span><span class="p">(</span><span class="n">generic</span><span class="o">.</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">City</span>
+</pre></div>
+</div>
+<p>Il n’est même pas nécessaire de spécifier le nom du template. En effet, comme un modèle est fourni, la vue commencera par aller chercher un template avec le chemin suivant <code class="docutils literal notranslate"><span class="pre">app_name/model_name_list.html</span></code> ou <code class="docutils literal notranslate"><span class="pre">app_name/model_name_detail.html</span></code>. Ce qui donnerait <code class="docutils literal notranslate"><span class="pre">my_app/city_detail.html</span></code> dans le premier cas par exemple.</p>
+<p>Les Class-Based-Views peuvent se révéler très puissante et faire gagner un temps précieux. Leur maîtrise reste plus difficile en raison du nombre de méthodes «&nbsp;cachées&nbsp;». <a class="reference external" href="https://ccbv.co.uk">Ce site</a> permet d’explorer plus en détail l’implémentation de chacune de ses classes.</p>
+<p>Parmi les vues les plus utilisées, nous trouvons les <code class="docutils literal notranslate"><span class="pre">DetailView</span></code>, <code class="docutils literal notranslate"><span class="pre">ListView</span></code>, <code class="docutils literal notranslate"><span class="pre">TemplateView</span></code>, <code class="docutils literal notranslate"><span class="pre">FormView</span></code>, <code class="docutils literal notranslate"><span class="pre">DeleteView</span></code>, <code class="docutils literal notranslate"><span class="pre">UpdateView</span></code> etc… dont le nom et l’usage assez explicite vous permettront de vous concentrer sur votre logique métier.</p>
+<p>Les exemples fournis ne sont pas réellement complet, en effet il ne faut pas oublier au sein de nos URLS d’appeler la méthode <code class="docutils literal notranslate"><span class="pre">as_view</span></code> comme dans l’exemple suivant :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">my_app.views</span> <span class="kn">import</span> <span class="n">CityList</span>
+
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;cities/, CityList.as_view(), name=&#39;</span><span class="n">city_list</span><span class="s1">&#39;),</span>
+    <span class="o">...</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Vues génériques ou Class Based Views</a><ul>
+<li><a class="reference internal" href="#un-premier-exemple">Un premier exemple</a></li>
+<li><a class="reference internal" href="#en-allant-plus-loin">En allant plus loin</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/Vues-génériques.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/Vues-génériques.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

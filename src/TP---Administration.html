@@ -1,0 +1,311 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Création d’un super utilisateur &#8212; Documentation Formation Django 1.0</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Ajoutons de quoi gérer nos modèles via un back-office pour pouvoir se passer de l’interface utilisateur et gérer tous les objets en base.</p>
+<div class="section" id="creation-d-un-super-utilisateur">
+<span id="creation-d-un-super-utilisateur"></span><h1>Création d’un super utilisateur<a class="headerlink" href="#creation-d-un-super-utilisateur" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Il existe une commande pour créer un super utilisateur (admin) si vous n’en avez pas encore un. Pour accéder à l’interface d’administration, il suffit d’avoir un utilisateur actif avec l’attribut <code class="docutils literal notranslate"><span class="pre">is_staff</span></code> à <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">createsuperuser</span></code></p>
+</div>
+<div class="section" id="ajout-de-l-interface">
+<span id="ajout-de-l-interface"></span><h1>Ajout de l’interface<a class="headerlink" href="#ajout-de-l-interface" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Nous devons vérifier la présence des middlewares et ajouter les URLs :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^admin/&#39;</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>La procédure à suivre était expliquée <a class="reference external" href="https://github.com/emencia/emencia-django-training/wiki/Installer-l'interface-d'administration">ici</a>.</p>
+<p>Dans notre fichier <code class="docutils literal notranslate"><span class="pre">tasks/admin.py</span></code> :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="k">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="k">import</span> <span class="n">Category</span><span class="p">,</span> <span class="n">ToDoEntry</span>
+
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Category</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">ToDoEntry</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>permettra d’ajouter les interfaces nécessaires pour notre administration. Il va sans dire que nous nous sentons tous très mal à l’idée d’avoir ajouter un code non testé. Nous pouvons vérifier à la main si cela à fonctionner… Mais non, je blague ! Écrivons un test immédiatement avant que la police des développeurs ne débarque. Pour cela, nous allons avoir besoin de tester l’interface avec un utilisateur avec ou sans les droits admin. Nous allons donc créer une <code class="docutils literal notranslate"><span class="pre">Factory</span></code> pour pouvoir créer facilement nos utilisateurs à la volée.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tasks/tests/factories.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">factory</span>
+<span class="kn">import</span> <span class="nn">faker</span>
+<span class="kn">import</span> <span class="nn">pytz</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+
+<span class="kn">from</span> <span class="nn">django.template.defaultfilters</span> <span class="kn">import</span> <span class="n">slugify</span>
+
+<span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">Category</span><span class="p">,</span> <span class="n">ToDoEntry</span>
+
+
+<span class="n">faker</span> <span class="o">=</span> <span class="n">faker</span><span class="o">.</span><span class="n">Factory</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">CategoryFactory</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">django</span><span class="o">.</span><span class="n">DjangoModelFactory</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">class</span> <span class="nc">ToDoEntryFactory</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">django</span><span class="o">.</span><span class="n">DjangoModelFactory</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">class</span> <span class="nc">UserFactory</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">django</span><span class="o">.</span><span class="n">DjangoModelFactory</span><span class="p">):</span>
+    <span class="n">first_name</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">lazy_attribute</span><span class="p">(</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">faker</span><span class="o">.</span><span class="n">first_name</span><span class="p">())</span>
+    <span class="n">last_name</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">lazy_attribute</span><span class="p">(</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">faker</span><span class="o">.</span><span class="n">last_name</span><span class="p">())</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">lazy_attribute</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">first_name</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">o</span><span class="o">.</span><span class="n">last_name</span><span class="p">))</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">lazy_attribute</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="s1">&#39;{}@example.com&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">username</span><span class="p">))</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="s1">&#39;auth.User&#39;</span>
+        <span class="n">django_get_or_create</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="nd">@factory.lazy_attribute</span>
+    <span class="k">def</span> <span class="nf">date_joined</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+
+    <span class="n">last_login</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">lazy_attribute</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">date_joined</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_generate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Override the default _generate() to set the password.&quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_generate</span><span class="p">(</span><span class="n">create</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">user</span>
+</pre></div>
+</div>
+<p>Il peut maintenant être utile de se créer un outil pour tester directement nos vues avec un utilisateur avec certain droits.</p>
+<p>Pour cela, nous allons nous créer une classe de test personnalisée.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tasks/tests/common.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
+
+<span class="kn">from</span> <span class="nn">.factories</span> <span class="kn">import</span> <span class="n">UserFactory</span>
+
+
+<span class="k">class</span> <span class="nc">ScenarioTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span> <span class="nf">log_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;password&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">logout</span><span class="p">()</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">setUpTestData</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">admin</span> <span class="o">=</span> <span class="n">UserFactory</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">is_superuser</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">regular_user</span> <span class="o">=</span> <span class="n">UserFactory</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">is_superuser</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">admin_scenario</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">admin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regular_user_scenario</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regular_user</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Nous allons maintenant pouvoir écrire nos tests pour notre interface d’administration tranquillement et nous disposerons dorénavant d’outils pour accélérer la mise en place d’autres tests.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tasks/tests/tests_admin.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+
+<span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">Category</span><span class="p">,</span> <span class="n">ToDoEntry</span>
+<span class="kn">from</span> <span class="nn">.common</span> <span class="kn">import</span> <span class="n">ScenarioTestCase</span>
+
+
+<span class="k">class</span> <span class="nc">TestRegisterModelInAdmin</span><span class="p">(</span><span class="n">ScenarioTestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_models_are_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">admin_scenario</span><span class="p">:</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;admin:index&#39;</span><span class="p">))</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+            <span class="n">models</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">Category</span><span class="p">,</span>
+                <span class="n">ToDoEntry</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name_plural</span><span class="p">)</span> <span class="ow">in</span> <span class="n">content</span>
+
+
+<span class="k">class</span> <span class="nc">TestAddModel</span><span class="p">(</span><span class="n">ScenarioTestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_can_access_add_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">admin_scenario</span><span class="p">:</span>
+            <span class="n">models</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">Category</span><span class="p">,</span>
+                <span class="n">ToDoEntry</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;admin:tasks_{}_add&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+                <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+
+
+<span class="k">class</span> <span class="nc">TestAdminAccess</span><span class="p">(</span><span class="n">ScenarioTestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_cant_access_admin_if_regular_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">regular_user_scenario</span><span class="p">:</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;admin:index&#39;</span><span class="p">))</span>
+            <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">302</span>
+
+            <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;admin:index&#39;</span><span class="p">),</span> <span class="n">follow</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;You are authenticated as {}, but are not authorized&#39;</span>
+                <span class="s1">&#39; to access this page. Would you like to login to a different &#39;</span>
+                <span class="s1">&#39;account?&#39;</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regular_user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">error_msg</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_can_access_if_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">admin_scenario</span><span class="p">:</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;admin:index&#39;</span><span class="p">))</span>
+            <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ajout-de-quelques-fonctionnalites">
+<span id="ajout-de-quelques-fonctionnalites"></span><h1>Ajout de quelques fonctionnalités<a class="headerlink" href="#ajout-de-quelques-fonctionnalites" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Nous allons ajouter :</p>
+<ul class="simple">
+<li>un champ de recherche sur deux champs</li>
+<li>des filtres par date, par statut (terminé ou non) et par catégorie</li>
+<li>une action pour marquer comme terminé nos éléments</li>
+<li>ajouter plus d’informations sur la vue en liste (<code class="docutils literal notranslate"><span class="pre">__str__,</span> <span class="pre">name,</span> <span class="pre">category,</span> <span class="pre">done,</span> <span class="pre">creation_date</span></code>)</li>
+</ul>
+<p>Les tests associés sont laissés en exercice par souci de concision.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tasks/admin.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Category</span><span class="p">,</span> <span class="n">ToDoEntry</span>
+
+
+<span class="k">class</span> <span class="nc">ToDoEntryAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">mark_as_done</span><span class="p">(</span><span class="n">modeladmin</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
+        <span class="n">queryset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">done</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">mark_as_done</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Mark items as done&#39;</span>
+
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;__str__&#39;</span><span class="p">,</span> <span class="s1">&#39;done&#39;</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s1">&#39;creation_date&#39;</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">list_filter</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;creation_date&#39;</span><span class="p">,</span> <span class="s1">&#39;category__name&#39;</span><span class="p">,</span> <span class="s1">&#39;done&#39;</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;category__name&#39;</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mark_as_done&#39;</span><span class="p">]</span>
+
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Category</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">ToDoEntry</span><span class="p">,</span> <span class="n">ToDoEntryAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Avec cet exemple, on voit bien toute la puissance de l’interface d’administration de Django. En quelques lignes, ces fonctionnalités basiques sont ajoutées. Les refaire à la main ne serait pas si compliqué mais extrêmement fastidieux.</p>
+<p>Le résultat observable dans l’interface doit ressembler au suivant :</p>
+<p><img alt="Capture d'écran de l'interface d'admin" src="https://docs.google.com/drawings/d/e/2PACX-1vQljR2hygSLayURv55ygMHVT3paAgQAo95rmQXrMFbA39kqKczV4X0rJNd5q0sDBrppx_Ew4zotoF1w/pub?w=925&amp;h=359" /></p>
+<p>L’ensemble du code obtenu à l’issu de ce TP doit être similaire à <a class="reference external" href="https://github.com/emencia/emencia-django-training/tree/admin">la branche admin</a></p>
+</div>
+<div class="section" id="conclusion">
+<span id="conclusion"></span><h1>Conclusion<a class="headerlink" href="#conclusion" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Nous avons vu comment Django est équipé pour ajouter en quelques lignes une interface puissante pour interagir avec les modèles et les objets en base de données. Il est possible de régler encore plus finement cette interface avec des actions supplémentaires, des pages customisées, des imports/exports, des droits d’accès plus fins etc…</p>
+<p>Pour ce qui est de notre application, nous avons maintenant un back office dédié et l’interface est utilisable par nos utilisateurs. Nous avons fait le tour des fonctionnalités basique de Django et ainsi s’achève l’introduction à Django.</p>
+<p>Les sections suivantes de ce cours sont considérées comme plus avancées. Pour ce qui est des fonctionnalités du site de démonstration que nous avons réalisé, nous pouvons espérer ajouter une solution d’authentification pour pouvoir avoir des listes propres à chaque utilisateur et éviter que tout internet se partage la même liste. Nous pouvons également vouloir entre autres :</p>
+<ul class="simple">
+<li>Aller plus loin dans nos tests</li>
+<li>Gérer nos fichiers statiques et media</li>
+<li>Internationaliser notre application</li>
+<li>Déployer (!!) notre site en production</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Création d’un super utilisateur</a></li>
+<li><a class="reference internal" href="#ajout-de-l-interface">Ajout de l’interface</a></li>
+<li><a class="reference internal" href="#ajout-de-quelques-fonctionnalites">Ajout de quelques fonctionnalités</a></li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/TP---Administration.md.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Adrien Brunet.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/src/TP---Administration.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
