@@ -18,3 +18,26 @@ a.button:hover {
 #sommaire {
   margin-bottom: 1.5rem;
 }
+
+h1 {
+  font-weight: 800;
+  color: #41bcd5;
+  text-transform: uppercase;
+  font-size: 1.6rem;
+  position: relative;
+  font-style: normal;
+  letter-spacing: -1px;
+  font-family: "Open Sans",jaf-facitweb,lato;
+  font-size: 30px !important;
+  margin-bottom: 2rem !important;
+}
+
+h1:after {
+  content: '';
+  height: 3px;
+  background-color: #41bcd5;
+  position: absolute;
+  bottom: -1rem;
+  width: 20%;
+  left: 0;
+}
