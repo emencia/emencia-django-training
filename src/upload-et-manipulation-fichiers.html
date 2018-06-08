@@ -16,20 +16,23 @@
     <script type="text/javascript" src="../_static/translations.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Recherche" href="../search.html" />
-   
+
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
+
+
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
-  
+
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
+            <div class="section" id="sommaire">
+              <a href="/emencia-django-training/src/home.html" class="button">SOMMAIRE</a>
+            </div>
+
   <div class="section" id="upload-de-fichiers">
 <span id="upload-de-fichiers"></span><h1>Upload de fichiers<a class="headerlink" href="#upload-de-fichiers" title="Lien permanent vers ce titre">¶</a></h1>
 <p>Lors d’un upload, les données d’un fichier passent par <code class="docutils literal notranslate"><span class="pre">request.FILES</span></code> (voir éventuellement la documentation de <code class="docutils literal notranslate"><span class="pre">Request</span></code> et <code class="docutils literal notranslate"><span class="pre">Response</span></code>). Avant toute chose, il est sain de rappeler qu’il faut se méfier de tout contenu de la part des utilisateurs. Django fournit un petit guide pratique de sécurité à ce sujet dans <a class="reference external" href="https://docs.djangoproject.com/fr/1.11/topics/security/#user-uploaded-content-security">la documentation officielle</a>.</p>
@@ -44,7 +47,7 @@
 Une vue gérant ce formulaire recevra les données du fichier dans <code class="docutils literal notranslate"><span class="pre">request.FILES</span></code> (dictionnaire). Dans notre exemple, on pourrait accéder au fichier via <code class="docutils literal notranslate"><span class="pre">request.FILES['my_file']</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">request.FILES</span></code> contient les données lors d’un POST et quand le template utilisé contient bien : <code class="docutils literal notranslate"><span class="pre">&lt;form</span> <span class="pre">enctype=&quot;multipart/form-data&quot;...&gt;</span></code>. Sans cet attribut, <code class="docutils literal notranslate"><span class="pre">request.FILES</span></code> reste vide.</p>
 <p>A l’instanciation du formulaire avec les données envoyées, il faut bien penser à écrire :</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_form</span> <span class="o">=</span> <span class="n">FileUploadForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">FILES</span><span class="p">)</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_form</span> <span class="o">=</span> <span class="n">FileUploadForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">FILES</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>pour lier les données au formulaires.</p>
@@ -55,7 +58,10 @@ Une vue gérant ce formulaire recevra les données du fichier dans <code class="
 <p>Si vous utilisez un modèle avec un <code class="docutils literal notranslate"><span class="pre">FileField</span></code>, le <code class="docutils literal notranslate"><span class="pre">ModelForm</span></code> aura déjà toute la logique nécessaire présente.</p>
 <p>Le fichier sera enregistré à l’emplacement indiqué par le paramètre <code class="docutils literal notranslate"><span class="pre">upload_to</span></code> du champ <code class="docutils literal notranslate"><span class="pre">FileField</span></code> correspondant lors de l’appel à <code class="docutils literal notranslate"><span class="pre">form.save()</span></code>. Cela peut permettre de séparer les différents points d’entrée des fichiers selon leurs origines et/ou leurs usages.</p>
 </div>
-
+<div class="section" id="footer">
+  <a href="/emencia-django-training/src/gestion-fichiers-media.html" class="button left">PRÉCEDENT</a>
+  <a href="/emencia-django-training/src/internationaliser-application.html" class="button right">SUIVANT</a>
+</div>
 
           </div>
         </div>
@@ -99,18 +105,18 @@ Une vue gérant ce formulaire recevra les données du fichier dans <code class="
     </div>
     <div class="footer">
       &copy;2017, Adrien Brunet.
-      
+
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
+
       |
       <a href="../_sources/src/Upload-et-manipulation-de-fichiers.md.txt"
           rel="nofollow">Page source</a>
     </div>
 
-    
 
-    
+
+
   </body>
 </html>

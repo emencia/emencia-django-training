@@ -16,20 +16,23 @@
     <script type="text/javascript" src="../_static/translations.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Recherche" href="../search.html" />
-   
+
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
+
+
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
-  
+
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
+            <div class="section" id="sommaire">
+              <a href="/emencia-django-training/src/home.html" class="button">SOMMAIRE</a>
+            </div>
+
   <p>Nous avons vu beaucoup de choses dans les chapitres précédents ainsi que leur travaux pratiques mais nous avons éviter un des points les plus essentiels : le <strong>déploiement</strong> !</p>
 <p>Il est insensé d’essayer de devenir un bon développeur Django sans pouvoir déployer son projet sur un serveur en production. Tout l’intérêt d’un site est d’être disponible par tous. Par ailleurs, il y a nombre de difficultés qui ne se rencontrent qu’à partir du moment ou le site est en ligne. La première difficulté rencontrée étant en général… l’utilisateur lui-même qui se comporte rarement comme prévu initialement !</p>
 <div class="section" id="quelques-pre-requis">
@@ -250,7 +253,10 @@ sudo ln -s /etc/nginx/sites-available/$SITENAME /etc/nginx/sites-enabled/$SITENA
 <p>Notons ici que nous n’avons pas aborder la configuration (et son automatisation) de la machine (ou des machines) qui sert de serveur de production.</p>
 <p>Il existe de nombreux outils d’automatisation tels que <a class="reference external" href="http://www.fabfile.org/"><code class="docutils literal notranslate"><span class="pre">Fabric</span></code></a> ou encore <a class="reference external" href="https://www.ansible.com/"><code class="docutils literal notranslate"><span class="pre">Ansible</span></code></a> qui vous feront gagner un temps précieux.</p>
 </div>
-
+<div class="section" id="footer">
+  <a href="/emencia-django-training/src/logging.html" class="button left">PRÉCEDENT</a>
+  <a href="/emencia-django-training/src/modules-externes.html" class="button right">SUIVANT</a>
+</div>
 
           </div>
         </div>
@@ -315,18 +321,18 @@ sudo ln -s /etc/nginx/sites-available/$SITENAME /etc/nginx/sites-enabled/$SITENA
     </div>
     <div class="footer">
       &copy;2017, Adrien Brunet.
-      
+
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
+
       |
       <a href="../_sources/src/Deploiement.md.txt"
           rel="nofollow">Page source</a>
     </div>
 
-    
 
-    
+
+
   </body>
 </html>

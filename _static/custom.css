@@ -15,10 +15,6 @@ a.button:hover {
     color: #0db4d6;
 }
 
-#sommaire {
-  margin-bottom: 1.5rem;
-}
-
 h1 {
   font-weight: 800;
   color: #41bcd5;
@@ -32,6 +28,11 @@ h1 {
   margin-bottom: 2rem !important;
 }
 
+h1 a {
+  color: #41bcd5;
+}
+
+
 h1:after {
   content: '';
   height: 3px;
@@ -40,4 +41,42 @@ h1:after {
   bottom: -1rem;
   width: 20%;
   left: 0;
+}
+
+h2 {
+  color: #41bcd5;
+}
+
+h2 a {
+  color: #41bcd5;
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+div.sphinxsidebar h3 {
+  color: #41bcd5;
+}
+
+div.sphinxsidebar h3 a {
+  color: #41bcd5;
+}
+
+
+.sphinxsidebarwrapper {
+  background-color: #efefef;
+  padding-bottom: 3rem !important;
+}
+
+.right {
+  float: right;
+}
+
+.left {
+  float: left;
+}
+
+#navigation {
+  display: flow-root;
 }

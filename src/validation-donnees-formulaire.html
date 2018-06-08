@@ -16,20 +16,23 @@
     <script type="text/javascript" src="../_static/translations.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Recherche" href="../search.html" />
-   
+
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
+
+
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
-  
+
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
+            <div class="section" id="sommaire">
+              <a href="/emencia-django-training/src/home.html" class="button">SOMMAIRE</a>
+            </div>
+
   <div class="section" id="validation">
 <span id="validation"></span><h1>Validation<a class="headerlink" href="#validation" title="Lien permanent vers ce titre">¶</a></h1>
 <p>Il existe une méthode <code class="docutils literal notranslate"><span class="pre">is_valid</span></code> sur les formulaires qui permet de vérifier la conformité des données.</p>
@@ -50,7 +53,10 @@ Selon l’endroit où est levé l’erreur, elle pourra se trouver à la clé du
 <p>La validation passe d’abord par la validation du formulaire, puis par la validation du modèle lié au formulaire avec l’appel de <code class="docutils literal notranslate"><span class="pre">MyModel.clean()</span></code>.</p>
 <p>Un <code class="docutils literal notranslate"><span class="pre">ModelForm</span></code> possède également une méthode <code class="docutils literal notranslate"><span class="pre">save()</span></code> qui permet de sauver l’instance en base de données. Dans le cas où la validation n’a pas eu lieu, l’appel à <code class="docutils literal notranslate"><span class="pre">save()</span></code> s’en charge en contrôlant <code class="docutils literal notranslate"><span class="pre">form.errors</span></code>. L’exception <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> est levée si le formulaire est invalide, par exemple si <code class="docutils literal notranslate"><span class="pre">form.errors</span></code> est évalué à <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </div>
-
+<div class="section" id="footer">
+  <a href="/emencia-django-training/src/creation-formulaires-et-champs.html" class="button left">PRÉCEDENT</a>
+  <a href="/emencia-django-training/src/gestion-et-personnalisation-messages-erreurs.html" class="button right">SUIVANT</a>
+</div>
 
           </div>
         </div>
@@ -88,18 +94,18 @@ Selon l’endroit où est levé l’erreur, elle pourra se trouver à la clé du
     </div>
     <div class="footer">
       &copy;2017, Adrien Brunet.
-      
+
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
+
       |
       <a href="../_sources/src/Validation-des-données-d&#39;un-formulaire.md.txt"
           rel="nofollow">Page source</a>
     </div>
 
-    
 
-    
+
+
   </body>
 </html>
