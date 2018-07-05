@@ -1,0 +1,83 @@
+a.button {
+    font-family: arial;
+    font-size: 13px;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 25px;
+    background-color: #0db4d6;
+    color: #fff;
+    border: .15rem solid #0a90ab;
+    transition: all .3s;
+}
+
+a.button:hover {
+    background-color: #fff;
+    color: #0db4d6;
+}
+
+h1 {
+  font-weight: 800;
+  color: #41bcd5;
+  text-transform: uppercase;
+  font-size: 1.6rem;
+  position: relative;
+  font-style: normal;
+  letter-spacing: -1px;
+  font-family: "Open Sans",jaf-facitweb,lato;
+  font-size: 30px !important;
+  margin-bottom: 2rem !important;
+}
+
+h1 a {
+  color: #41bcd5;
+}
+
+
+h1:after {
+  content: '';
+  height: 3px;
+  background-color: #41bcd5;
+  position: absolute;
+  bottom: -1rem;
+  width: 20%;
+  left: 0;
+}
+
+h2 {
+  color: #41bcd5;
+}
+
+h2 a {
+  color: #41bcd5;
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+div.sphinxsidebar h3 {
+  color: #41bcd5;
+}
+
+div.sphinxsidebar h3 a {
+  color: #41bcd5;
+}
+
+
+.sphinxsidebarwrapper {
+  background-color: #efefef;
+  padding-bottom: 3rem !important;
+}
+
+.right {
+  float: right;
+}
+
+.left {
+  float: left;
+}
+
+#footer {
+  display: flow-root;
+}
+/* This file intentionally left blank. */

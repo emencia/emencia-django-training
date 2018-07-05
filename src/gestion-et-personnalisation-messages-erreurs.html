@@ -16,23 +16,20 @@
     <script type="text/javascript" src="../_static/translations.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Recherche" href="../search.html" />
-
+   
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-
-
+  
+  
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
-
+  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            <div class="section" id="sommaire">
-              <a href="/emencia-django-training/src/home.html" class="button">SOMMAIRE</a>
-            </div>
-
+            
   <p>Nous avons déjà vu comment ajouter nos propres messages d’erreur reste à savoir comment contrôler leur affichage.</p>
 <div class="section" id="un-controle-plus-fin-des-erreurs-dans-les-templates">
 <span id="un-controle-plus-fin-des-erreurs-dans-les-templates"></span><h1>Un contrôle plus fin des erreurs dans les templates<a class="headerlink" href="#un-controle-plus-fin-des-erreurs-dans-les-templates" title="Lien permanent vers ce titre">¶</a></h1>
@@ -82,7 +79,7 @@ On peut décider de remplacer <code class="docutils literal notranslate"><span c
 <span class="k">class</span> <span class="nc">DivErrorList</span><span class="p">(</span><span class="n">ErrorList</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_div</span><span class="p">()</span>
-
+    
     <span class="k">def</span> <span class="nf">as_div</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39;&#39;</span>
@@ -100,10 +97,7 @@ On peut décider de remplacer <code class="docutils literal notranslate"><span c
 <p>Il est possible d’aller encore plus loin et de redéfinir la manière dont les formulaires et les champs sont générés et également de proposer des templates pour chaque widgets.</p>
 <p>Allez plus loin avec <a class="reference external" href="https://docs.djangoproject.com/fr/1.11/ref/forms/renderers/#the-low-level-render-api">la documentation officielle</a>.</p>
 </div>
-<div class="section" id="footer">
-  <a href="/emencia-django-training/src/validation-donnees-formulaire.html" class="button left">PRÉCEDENT</a>
-  <a href="/emencia-django-training/src/tp-formulaires.html" class="button right">SUIVANT</a>
-</div>
+
 
           </div>
         </div>
@@ -127,7 +121,7 @@ On peut décider de remplacer <code class="docutils literal notranslate"><span c
   <div role="note" aria-label="source link">
     <h3>Cette page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/src/Gestion-et-personnalisation-des-messages-d&#39;erreurs.md.txt"
+      <li><a href="../_sources/src/gestion-et-personnalisation-messages-erreurs.md.txt"
             rel="nofollow">Montrer le code source</a></li>
     </ul>
    </div>
@@ -149,18 +143,18 @@ On peut décider de remplacer <code class="docutils literal notranslate"><span c
     </div>
     <div class="footer">
       &copy;2017, Adrien Brunet.
-
+      
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-
+      
       |
-      <a href="../_sources/src/Gestion-et-personnalisation-des-messages-d&#39;erreurs.md.txt"
+      <a href="../_sources/src/gestion-et-personnalisation-messages-erreurs.md.txt"
           rel="nofollow">Page source</a>
     </div>
 
+    
 
-
-
+    
   </body>
 </html>

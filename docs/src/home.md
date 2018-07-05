@@ -1,3 +1,4 @@
+
 Plan
 ====
 
@@ -5,19 +6,19 @@ Plan
 
 Bases unix, git, python, html & css
 
-![Django ponay logo](http://media.djangopony.com/img/magic-pony-django-wallpaper.png)
+![Django ponay logo](/emencia-django-training/_static/magic-pony-django-wallpaper.png)
 
 # Introduction
 
-* [Courte introduction à Python et la Programmation Orientée Objet (POO)](https://github.com/emencia/emencia-django-training/wiki/Introduction-%C3%A0-Python)
-* [Modèle MVT](https://github.com/emencia/emencia-django-training/wiki/Mod%C3%A8le-MVT)
-* [ORM](https://github.com/emencia/emencia-django-training/wiki/ORM)
-* [Exemples de projets en Django](https://github.com/emencia/emencia-django-training/wiki/Sites-utlisant-django)
-* [Outils pour le développement](https://github.com/emencia/emencia-django-training/wiki/Outils-pour-le-d%C3%A9veloppement) : Virtualenv  & le shell interactif Django
+* [Courte introduction à Python et la Programmation Orientée Objet (POO)](introduction-python.html)
+* [Modèle MVT](modele-mvt.html)
+* [ORM](orm.html)
+* [Exemples de projets en Django](sites-utlisant-django.html)
+* [Outils pour le développement](outils-developpement.html) : Virtualenv  & le shell interactif Django
 
 La suite de la formation se déroulera avec l’implémentation d’un site basique d’une TODO-list. Chaque élément de la todo-list appartiendra à un thème précis (un modèle à part).
 
-## [Travaux pratiques :](https://github.com/emencia/emencia-django-training/wiki/TP---Introduction)
+## [Travaux pratiques :](tp-introduction.html)
 
 * Préparation de l'environnement.
 * Installation de Python, Django.
@@ -27,9 +28,9 @@ La suite de la formation se déroulera avec l’implémentation d’un site basi
 
 # Les applications Django
 
-* [Description & intérêts](https://github.com/emencia/emencia-django-training/wiki/Applications-Django)
+* [Description & intérêts](applications-django.html)
 
-## [Travaux pratiques](https://github.com/emencia/emencia-django-training/wiki/TP---Applications-Django)
+## [Travaux pratiques](tp-applications-django.html)
 
 * Création de notre première application "task"
 * "Brancher" l'application au projet
@@ -39,41 +40,41 @@ La suite de la formation se déroulera avec l’implémentation d’un site basi
 
 ## Les views
 
-* [Vues simples aka Functional View & les classes `HttpResponse`, `HttpRequest` et `QueryDict`](https://github.com/emencia/emencia-django-training/wiki/Vues-simples)
-* [Configuration des URL : UrlConf](https://github.com/emencia/emencia-django-training/wiki/Configuration-des-URL)
+* [Vues simples aka Functional View & les classes `HttpResponse`, `HttpRequest` et `QueryDict`](vues-simples.html)
+* [Configuration des URL : UrlConf](/configuration-des-url.html)
 
 ## Les templates
 
-* [Une première approche](https://github.com/emencia/emencia-django-training/wiki/Une-premi%C3%A8re-approche)
-* [Gestion des contextes](https://github.com/emencia/emencia-django-training/wiki/Gestion-des-contextes)
-* [Utilisation des tags et filtres personnalisés](https://github.com/emencia/emencia-django-training/wiki/Utilisation-des-variables,-filtres-et-tags-personnalis%C3%A9s)
+* [Une première approche](premiere-approche.html)
+* [Gestion des contextes](gestion-des-contextes.html)
+* [Utilisation des tags et filtres personnalisés](utilisation-variables-filtres-tags-personnalises.html)
 
-  * [Le tag conditionnel IF](https://github.com/emencia/emencia-django-training/wiki/Le-tag-conditionnel-IF)
-  * [Le tag de boucle FOR](https://github.com/emencia/emencia-django-training/wiki/Le-tag-de-boucle-FOR)
-  * [Le tag de commentaire](https://github.com/emencia/emencia-django-training/wiki/Le-tag-de-commentaire)
-  * [Les tags de traductions](https://github.com/emencia/emencia-django-training/wiki/Les-tags-de-traductions)
+  * [Le tag conditionnel IF](tag-conditionnel-if.html)
+  * [Le tag de boucle FOR](tag-de-boucle-for.html)
+  * [Le tag de commentaire](tag-de-commentaire.html)
+  * [Les tags de traductions](tags-de-traductions.html)
 
-* [Réutilisation des templates : héritage entre templates](https://github.com/emencia/emencia-django-training/wiki/R%C3%A9utilisation-des-templates-:-h%C3%A9ritage-entre-templates)
-* [Utilisation des blocs](https://github.com/emencia/emencia-django-training/wiki/Utilisation-des-blocs)
-* [Gestion des fichiers statiques (initiation brève) et tag URL](https://github.com/emencia/emencia-django-training/wiki/Gestion-des-fichiers-statiques-et-url)
-* [Gestion des templates avec des librairies tierces](https://github.com/emencia/emencia-django-training/wiki/Gestion-des-templates-avec-des-librairies-tierces)
+* [Réutilisation des templates : héritage entre templates](reutilisation-templates-heritage-entre-templates.html)
+* [Utilisation des blocs](utilisation-des-blocs.html)
+* [Gestion des fichiers statiques (initiation brève) et tag URL](gestion-fichiers-statiques-et-url.html)
+* [Gestion des templates avec des librairies tierces](gestion-templates-avec-librairies-tierces.html)
 
 ## Vues génériques
 
-* [Vues génériques (Class-Based-View) & exemples : `Redirect`, `Create`, `Update`, `Delete`...](https://github.com/emencia/emencia-django-training/wiki/Vues-g%C3%A9n%C3%A9riques)
+* [Vues génériques (Class-Based-View) & exemples : `Redirect`, `Create`, `Update`, `Delete`...](vues-generiques.html)
 
-## [Travaux pratiques](https://github.com/emencia/emencia-django-training/wiki/TP-Vues-&-templates) :
+## [Travaux pratiques](tp-vues-templates.html) :
 
 * Faire une vue simple : Hello World ! en utilisant des variables de templates
 * Utiliser les configurations d'url
 
 # L'accès aux données avec Django
 
-* [Les modèles Django](https://github.com/emencia/emencia-django-training/wiki/Les-mod%C3%A8les-Django) : Model, Field, Table, Column, Primary Key...
-* [Class Meta](https://github.com/emencia/emencia-django-training/wiki/Class-Meta)
-* [Accès aux données avec les QuerySets et Manager](https://github.com/emencia/emencia-django-training/wiki/Acc%C3%A8s-aux-donn%C3%A9es-avec-les-QuerySets-et-Manager)
+* [Les modèles Django](modeles-django.html) : Model, Field, Table, Column, Primary Key...
+* [Class Meta](class-meta.html)
+* [Accès aux données avec les QuerySets et Manager](acces-donnees-avec-querysets-et-manager.html)
 
-## [Travaux pratiques](https://github.com/emencia/emencia-django-training/wiki/TP-Mod%C3%A8les-et-vues) :
+## [Travaux pratiques](tp-modeles-et-vues.html) :
 
 * Création d’un modèle de TODO
 * Essai d’une requête
@@ -81,12 +82,12 @@ La suite de la formation se déroulera avec l’implémentation d’un site basi
 
 # Gestion des formulaires
 
-* [Les avantages des formulaires Django](https://github.com/emencia/emencia-django-training/wiki/Les-avantages-des-formulaires-Django-(g%C3%A9n%C3%A9ration-html---CSRF)) (génération html + CSRF)
-* [Création des formulaires & champs](https://github.com/emencia/emencia-django-training/wiki/Cr%C3%A9ation-des-formulaires-et-champs)
-* [Validation des données d'un formulaire](https://github.com/emencia/emencia-django-training/wiki/Validation-des-donn%C3%A9es-d'un-formulaire)
-* [Gestion et personnalisation des messages d'erreurs](https://github.com/emencia/emencia-django-training/wiki/Gestion-et-personnalisation-des-messages-d'erreurs)
+* [Les avantages des formulaires Django](avantages-formulaires-django-generation-html-csrf.html) (génération html + CSRF)
+* [Création des formulaires & champs](creation-formulaires-et-champs.html)
+* [Validation des données d'un formulaire](validation-donnees-formulaire.html)
+* [Gestion et personnalisation des messages d'erreurs](gestion-et-personnalisation-messages-erreurs.html)
 
-## [Travaux pratiques](https://github.com/emencia/emencia-django-training/wiki/TP---Formulaires) :
+## [Travaux pratiques](tp-formulaires.html) :
 
 * Créer un formulaire pour les thèmes et tâches des TODO
 * Créer des vues create, update, delete
@@ -95,13 +96,13 @@ La suite de la formation se déroulera avec l’implémentation d’un site basi
 
 # Interface d’administration
 
-* [Personnalisation de l'admin](https://github.com/emencia/emencia-django-training/wiki/Personnalisation-de-l'admin)
-* [Installer l'interface d'administration](https://github.com/emencia/emencia-django-training/wiki/Installer-l'interface-d'administration)
-* [Comptes utilisateurs et droits](https://github.com/emencia/emencia-django-training/wiki/Comptes-utilisateurs-et-droits)
-* [Publier des modèles dans l'interface](https://github.com/emencia/emencia-django-training/wiki/Publier-des-mod%C3%A8les-dans-l'interface-admin)
-* [Personnaliser les vues, ajouter des actions](https://github.com/emencia/emencia-django-training/wiki/Personnaliser-les-vues,-ajouter-des-actions)
+* [Personnalisation de l'admin](personnalisation-admin.html)
+* [Installer l'interface d'administration](installer-interface-administration.html)
+* [Comptes utilisateurs et droits](comptes-utilisateurs-et-droits.html)
+* [Publier des modèles dans l'interface](publier-des-modeles-interface-admin.html)
+* [Personnaliser les vues, ajouter des actions](personnaliser-vues-ajouter-actions.html)
 
-## [Travaux pratiques](https://github.com/emencia/emencia-django-training/wiki/TP---Administration) :
+## [Travaux pratiques](tp-administration.html) :
 
 * Ajouter des modèles dans l'admin
 * Personnaliser les vues de l'admin
@@ -127,30 +128,30 @@ Tests d’intégration (selenium)
 
 ## Fichiers statiques & Media
 
-* [Gestion des fichiers statiques](https://github.com/emencia/emencia-django-training/wiki/Gestion-des-fichiers-statiques)
-* [Gestion des fichiers media](https://github.com/emencia/emencia-django-training/wiki/Gestion-des-fichiers-media)
-* [Upload et manipulation de fichiers](https://github.com/emencia/emencia-django-training/wiki/Upload-et-manipulation-de-fichiers)
+* [Gestion des fichiers statiques](gestion-fichiers-statiques.html)
+* [Gestion des fichiers media](gestion-fichiers-media.html)
+* [Upload et manipulation de fichiers](upload-et-manipulation-fichiers.html)
 
 
 ## Internationalisation
 
-* [Internationaliser une application](https://github.com/emencia/emencia-django-training/wiki/Internationaliser-une-application)
-* [Gestion des fichiers de langues](https://github.com/emencia/emencia-django-training/wiki/Gestion-des-fichiers-de-langues)
-* [Traductions javascript](https://github.com/emencia/emencia-django-training/wiki/Traductions-javascript)
-* [Détection du langage utilisateur et URLs](https://github.com/emencia/emencia-django-training/wiki/D%C3%A9tection-du-langage-utilisateur-et-URLs)
+* [Internationaliser une application](internationaliser-application.html)
+* [Gestion des fichiers de langues](gestion-fichiers-de-langues.html)
+* [Traductions javascript](traductions-javascript.html)
+* [Détection du langage utilisateur et URLs](detection-langage-utilisateur-et-urls.html)
 
-## [Logging](https://github.com/emencia/emencia-django-training/wiki/Logging)
+## [Logging](logging.html)
 
-## [Deploiement](https://github.com/emencia/emencia-django-training/wiki/Deploiement)
+## [Deploiement](deploiement.html)
 
-## [Modules externes](https://github.com/emencia/emencia-django-training/wiki/Modules-externes)
+## [Modules externes](modules-externes.html)
 
 * Django-cms
 * Django-debug-toolbar
 * Django-rest-framework (api)
 * ...
 
-# [Communauté](https://github.com/emencia/emencia-django-training/wiki/Communaut%C3%A9)
+# [Communauté](communaute.html)
 
 * Quelques liens pour trouver des informations intéressantes
 * Conférences
