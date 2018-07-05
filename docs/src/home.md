@@ -6,7 +6,7 @@ Plan
 
 Bases unix, git, python, html & css
 
-![Django ponay logo](../_static/magic-pony-django-wallpaper.png)
+![Django ponay logo](http://emencia.github.io/emencia-django-training/_static/magic-pony-django-wallpaper.png)
 
 # Introduction
 
